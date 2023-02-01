@@ -1,0 +1,316 @@
+{% extends "jobs/base.html"%}
+
+{% block title %}
+  My Profile
+{% endblock %}
+
+{% block body %}
+<style>
+  .active-switch label input[type=checkbox]:checked+.lever {
+  background-color: #BEE6C9;
+}
+
+.active-switch label input[type=checkbox]:checked+.lever:after {
+  background-color: #5dc178;
+
+}
+  .decline-switch label input[type=checkbox]:checked+.lever {
+  background-color: #ecbdb7;
+}
+
+.decline-switch label input[type=checkbox]:checked+.lever:after {
+  background-color: #d97b6f;
+
+}
+  .declined-offer{
+display: none;
+  }
+  @media only screen and (max-width: 1519px) {
+    td{
+      font-size: 16px
+    }
+  }
+</style>
+
+      <div class="container"><h2>My Profile</h2></div>
+      <div class="container">
+        {% if not properties.company %} <h4>Your profile is not associated with a company. You cannot use this site without a company reference key. If you have one, click "Edit Profile Properties" and enter it. If you are interested in trying the platform, please call us to get set up!</h4> {% endif %}
+        <div class="row">
+          <div class="col s12 m12 l12 xl5">
+              <table class="center-align" class="centered">
+                <tr>
+                  <td>Username:</td>
+                  <td>{{ user.username }}</td>
+                </tr>
+                {% if properties.nickname %}
+                <tr>
+                  <td>Goes By:</td>
+                  <td>
+                        {{ properties.nickname }}
+                  </td>
+                </tr>
+                {% endif %}
+
+                <tr>
+                  <td>Name:</td>
+                  <td>
+                    {% if properties.user.first_name %}{{ properties.user.first_name }}{% endif %}  {% if properties.user.last_name %}{{ properties.user.last_name}}{% endif %}</td>
+                </tr>
+                <tr>
+                  <td>Email:</td>
+                  <td> {% if properties.user.email %}{{ properties.user.email }}{% endif %}</td>
+                </tr>
+                <tr>
+                  <td>Phone Number:</td>
+                  <td> {% if properties.phone_number %}{{ properties.phone_number}}{% endif %}</td>
+                </tr>
+                
+                <tr>
+                  <td>User Type(s)</td>
+                  <td>
+                    {% if user_types %}
+                    {% for user_type in user_types %}
+
+                            {{ user_type }},
+                    {% empty %}
+                        You have no User Type assigned.
+                    {% endfor %}
+                    {% endif %}
+                  </td>
+                </tr>
+                {% if properties.burn_rate %}
+                <tr>
+                  <td>Burn Rate:</td>
+                  <td> {% if properties.burn_rate %}{{ properties.burn_rate}}{% endif %}</td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td>Company:</td>
+                  <td> {% if properties.company %} {{ properties.company}}{% endif %}</td>
+                </tr>
+
+              </table>
+          </div>
+          <div class="col s12 xl6" style="text-align: center;">
+            <img style="margin: auto; " class="mobile-pad " width="300" src="https://expertphotography.b-cdn.net/wp-content/uploads/2020/08/profile-photos-4.jpg" alt="">
+
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12 m12 l12 xl12">
+            <h5 style="text-align: center;">Support Requests</h5>
+            {% if properties.user.supporter_session.exists %}
+            <table class="highlight ">            
+              <tr>
+                <th>Person</th>
+                <th>Equipment</th>
+                <th>Description</th>
+                <th>Details</th>
+                <th>Meet Link</th>
+                <th></th>
+              </tr>
+              {% for request in properties.user.supporter_session.all|dictsortreversed:"created_at" %}
+                {% if not request.request.is_resolved %}      
+                <tr class="offer-{{request.id}}" {% if request.is_declined %} class="declined-offer" {% endif %} >
+                  <td>
+                    {{request.request.requester.first_name}} {{request.request.requester.last_name}} <br>
+                    request{{request.pk}} <br>
+                    offer{{request.request.pk}} <br>
+                    session{{request.offer_session.pk}} <br>
+                  </td>
+                  <td>                  
+                    {{request.request.equipment.equipment_type}}<br>
+                    {{request.request.equipment.equipment_model.model_manufacturer}} {{request.request.equipment.equipment_model}}                  
+                  </td>
+                  <td style="width: 30%;">      
+                    {{request.request.description}}                              
+                  </td>
+                  <td>
+                    <span style="color: #888;">{{request.created_at}}</span>  <br>
+                    {{request.request.details}}
+                  </td>
+                  <td id="link_td_"{{request.id}}></td>
+                  <td>   
+                    {% csrf_token %}           
+                    <div class="switch active-switch" id="active-switch-{{request.id}}" {% if request.is_declined %}style="display: none"{% endif %}>
+                      <label  style="white-space: nowrap;color: #039be5">
+                        <input type="checkbox" class="quick-tog blue" onchange="acceptToggle('{{request.id}}', this)" {% if request.request.is_active %}checked="checked"{% endif %}  id="active_input_{{request.id}}" name="active_input_{{request.id}}">
+                        <span class="lever"></span>
+                        Accept
+                      </label>
+                    </div>   
+                    <div class="switch decline-switch" id="decline-switch-{{request.id}}" {% if request.request.is_active %}style="display: none"{% endif %} style="padding-top: 7px;">
+                      <label  style="white-space: nowrap;">
+                        <input type="checkbox" class="quick-tog red lighten-3" onchange="declineToggle('{{request.id}}', this)" {% if request.is_declined  %}checked="checked"{% endif %} id="decline_input_{{request.id}}" name="decline_input_{{request.id}}">
+                        <span class="lever"></span>
+                        Decline
+                      </label>
+                    </div>   
+                  </td>
+                </tr>
+                {%endif%}
+              {%endfor%}
+            </table>
+            {%else%}
+            No Requests Yet
+            {%endif%}
+          </div>
+        </div>
+        <div><a style="margin: 2rem;" class="btn-small phone-button" href="{% url 'create_profile_view'%}">Edit Profile Properties</a></div> 
+      {% if properties.is_support %}
+      <br><br>
+      <div class="row">
+        <div class="col s12 m12 l6 xl4">
+        <ul class="collection with-header" >
+          
+          <li class="collection-header highlight"><h4>My Equipment Supported</h4></li>
+            {% for equipment in equipment_supported %}
+                    <li class="collection-item phone-font-lrg"><a class="phone-font-lrg" href="{% url 'equipment' equipment.id%}">{{ equipment }}</a></li>
+            {% empty %}
+                <span class="phone-font-med">Doesn't Support Any Equipment.</span> <br>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %}
+      </div>
+
+
+</div>
+<script src='https://meet.jit.si/external_api.js'></script>
+<script>
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: 'OnlineMeeting',
+        width: 1000,
+        height: 600,
+        parentNode: document.querySelector('#meet'),
+        lang: 'en'
+    };
+const api = new JitsiMeetExternalAPI(domain, options);
+  
+  function declineToggle(request_id, element){
+    let bool = null
+    if(element.checked){
+     bool=true
+    }else{
+      bool=false
+    }
+    $.ajax({
+      url: "{% url 'session_decline_toggle'%}",
+      type: 'POST', 
+      data:{
+        bool: bool,
+        request_id: request_id,
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data) {
+          console.log(data);
+          if(data.response){
+            $('#active-switch-'+request_id).hide()
+            $('#active_input_'+request_id).prop("checked", false)
+          }else{
+            $('#active-switch-'+request_id).show()
+          }
+      },
+      }).fail( function() {
+        if(bool){
+          element.checked = false
+        }else{
+          element.checked = true
+        }       
+        M.toast({html: 'Failed'})
+      }); 
+
+  }
+  function acceptToggle(request_id, element){
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: 'OnlineMeeting',
+        width: 1000,
+        height: 600,
+        parentNode: document.querySelector('#meet'),
+        lang: 'en'
+    };
+    const meeting_link = new JitsiMeetExternalAPI(domain, options);
+    var td_id = "#link_td_"+request_id
+    $(td_id).text(meeting_link)
+    let bool = null
+    if(element.checked){
+     bool=true
+    }else{
+      bool=false
+    }
+    $.ajax({
+      url: "{% url 'session_accept_toggle'%}",
+      type: 'POST', 
+      data:{
+        meeting_link:meeting_link,
+        bool: bool,
+        request_id: request_id,
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data) {
+          if(data.response){
+            $('#decline-switch-'+request_id).hide()
+            $('#decline_input_'+request_id).prop("checked", false)
+          }else{
+            console.log('no')
+            $('#decline-switch-'+request_id).show()
+          }
+      },
+      }).fail( function() {
+            M.toast({html: 'Failed'})
+        if(bool){
+          element.checked = false
+        }else{
+          element.checked = true
+        }       
+      }); 
+
+  }
+  function onAccept(request_id, element){
+    $.ajax({
+      url: "{% url 'session_accept_toggle'%}",
+      type: 'POST', 
+      data:{
+        request_id: request_id,
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data) {
+          console.log(data);
+      $(element).text('Accepted').css('color', '#b5cbbb')
+          // $(this).html('Pending')
+      },
+      }).fail( function() {
+            M.toast({html: 'Failed'})
+      }); 
+  }
+function onDecline(request_id, element){
+  // $('#')
+  $.ajax({
+    url: "{% url 'session_decline_toggle'%}",
+    type: 'POST', 
+    data:{
+      user_id: '{{properties.pk}}',
+      request_id: request_id,
+	    csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+    },
+    success: function(data) {
+        console.log(data);
+    $(element).text('Accepted').css('color', '#b5cbbb')
+        // $(this).html('Pending')
+    },
+    }).fail( function() {
+          M.toast({html: 'Failed'})
+    }); 
+}
+</script>
+
+
+
+
+
+
+
+{% endblock %}

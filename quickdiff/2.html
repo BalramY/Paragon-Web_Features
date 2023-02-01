@@ -1,0 +1,141 @@
+
+    <div class="">
+        {%if equipment.equipment_mold%}
+            <h5 class="blue-heading " style="padding-bottom: 1rem;" id="add_note_heading">Equipment Notes</h5>
+            <div class="container">
+              <div class="search-div" id="equipment_note-container" style="margin-left: 52px; float: right; position: -webkit-sticky; position: sticky;">
+                <input class="orange-underline search-input" id="search_equipment_note" type="text" placeholder="Search..."/>
+                  <div class="noselect phone-font-med" id="equipment_note-move-text" style="display: none; color: #888">
+                    <span id="equipment_note-matched-text"></span>
+                    <div style="float: right">
+                      <span class="phone-font-lrg hover-item search-arrows comp-font-ml " onclick="previousSearchNote('equipment_note');" id="equipment_note-previous-text" >▲
+                      </span>
+                      <span class=" phone-font-lrg hover-item search-arrows comp-font-ml  " onclick="nextSearchNote('equipment_note'); " id="equipment_note-next-text">▼
+                      </span>
+                    </div>  
+                  </div>
+                  <button id="search_equipment_note_button" onclick="searchNote('equipment_note', 'equipment_note_child_toggle', 'equipment_note-content'); headerLeft()" hidden>Search</button>
+              </div>
+              <div class="row">
+                <form id="add_note_form" class="container" action="{% url 'add_equipment_note' equipment.id %}" method="post">
+                  {% csrf_token %}
+                  <textarea id="add_note" name="add_note" class="materialize-textarea phone-font-sml"
+                    placeholder="type new equipment note" form="add_note_form" required></textarea>
+                  <button class="btn right waves-effect waves-light phone-button" type="submit" name="action"
+                    id="submit-btn-notes"> Add Note <i class="material-icons right">send</i></button>
+                </form>
+              </div>
+              <ul class="collection ">
+                {% for note in notes %}
+                {% include "jobs/job_note_data_new.html" with note=note note_type='equipment_note' %}
+                {% empty %}
+                <h6 style="color: #888; text-align: center;">No Notes </h6>
+                {% endfor %}
+              </ul>
+            </div>
+            <h5 class="blue-heading " id="eq_files_row" style="padding: 2.5rem;">Equipment Files</h5>
+            <div class="container">
+              
+            {% if equipment_files %}
+              <ul class="collection last-child-border" style="border: none;">
+                {% for file in equipment_files %}
+                <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
+                  <a href="{{file.equipment_file.url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
+                    <i class="material-icons left phone-font-med">insert_drive_file</i>
+                    {% if file.file_name %}
+                    {{file.file_name}}
+                    {% else %}
+                    {{file.filename}}
+                    {% endif %}
+                  </a>                                        
+                  {%  if request.user.is_superuser or request.user == file.author %}
+                  <a onclick="return confirm('Permanently remove?')" href="{% url 'remove_equipment_files' file.id %}" ><i style="color: #D0C0C0;border: 1px solid #ddd;" class="material-icons right phone-font-lrg">delete</i></a>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+                <h6 style="color: #888; text-align: center;">No Files</h6>
+            {% endif %}
+        <form id="file_add_form" action="{% url 'add_equipment_files' equipment.id %}" method="post"
+          enctype="multipart/form-data" style="padding-left: 1rem; padding-right:1rem;">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col s12 m12 l6 xl4">
+              <div class="file-field input-field">
+                <div class="btn-small tooltipped phone-button" data-tooltip="Add Files" id="file_add_button">
+                  <span><i class="material-icons phone-font-lrg">add</i></span>
+                  <input id="file_add" name="file_add" type="file" multiple>
+                </div>
+                <div class="file-path-wrapper">
+                  <input class="file-path validate phone-font-ml" type="text" placeholder="Select New File">
+                </div>
+              </div>
+            </div>
+            <div class="col s12 m12 l6 xl4">
+              <div class="input-field">
+                <input placeholder="optionally name the file" style="max-width: 300px;" form="file_add_form" class="phone-font-ml text-input " id="eq_file_name" name="eq_file_name" type="text">
+              </div>
+            </div>
+            <div class="col s12 m12 l6 xl4">          
+              <button class="btn waves-effect waves-light right phone-button" style="margin-top: 5px;" type="submit" name="action"
+                form="file_add_form" id="submit-btn-file"> Upload File
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+        </form>
+            </div>
+            <h5 class="blue-heading " id="eq_files_row" style="padding: 2.5rem;">Equipment Links</h5>
+            <div class="container">
+              
+            {% if equipment_links %}
+              <ul class="collection last-child-border" style="border: none;">
+                {% for link in equipment_links %}
+                <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
+                  <a href="{{link.link_url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
+                    <i class="material-icons left phone-font-med">link</i>
+                    {% if link.link_name %}
+                    {{link.link_name}}
+                    {% else %}
+                    {{link.link_url}}
+                    {% endif %}
+                  </a>                                        
+                  {%  if request.user.is_superuser or request.user == link.author %}
+                  <a onclick="return confirm('Permanently remove?')" href="#"><i style="color: #D0C0C0;border: 1px solid #ddd;" class="material-icons right phone-font-lrg">delete</i></a>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+                <h6 style="color: #888; text-align: center;">No Links</h6>
+            {% endif %}
+        <form id="link_add_form" action="{% url 'add_equipment_links' equipment.id %}" method="post"
+          enctype="multipart/form-data" style="padding-left: 1rem; padding-right:1rem;">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col s12 m12 l6 xl4">
+              <div class="input-field col s12 " id="link_url_div">
+                <input placeholder="paste entire URL" id="link_url" name="link_url" type="url">
+                <label for="link_url">URL</label>
+              </div>
+            </div>
+            <div class="col s12 m12 l6 xl4">
+              <div class="input-field">
+                <input placeholder="optionally name the link" style="max-width: 300px;" form="link_add_form" class="phone-font-ml text-input " id="eq_link_name" name="eq_link_name" type="text">
+              </div>
+            </div>
+            <div class="col s12 m12 l6 xl4">          
+              <button class="btn waves-effect waves-light right phone-button" style="margin-top: 5px;" type="submit" name="action"
+                form="link_add_form" id="submit-btn-link"> Add Link
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+        </form>
+            </div>
+        {%else%}
+          <h5 class="blue-heading " style="padding-bottom: 1rem;" id="add_note_heading">Records</h5>
+  
+        {%endif %}
+      </div> 

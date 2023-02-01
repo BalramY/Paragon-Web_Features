@@ -1,0 +1,29 @@
+class Meeting(models.Model):
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)  # creator of the meeting
+    title_of_meeting = models.CharField(max_length=150)
+    created = models.DateTimeField(auto_now_add=True)  # the time meeting was created
+    updated = models.DateTimeField(auto_now=True)  # time meeting was updated
+    starting_date_time = models.DateTimeField()
+    unique_meeting_name = models.TextField(blank=True, null=True)
+
+
+
+<script src='https://meet.jit.si/external_api.js'></script>
+<script>
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: 'OnlineMeeting',
+        width: 1000,
+        height: 600,
+        parentNode: document.querySelector('#meet'),
+        lang: 'en'
+    };
+const api = new JitsiMeetExternalAPI(domain, options);
+</script>
+
+
+def meeting(request, unique_meeting_name):
+    meeting = Meeting.objects.get(unique_meeting_name=unique_meeting_name)
+    return render(request, 'meeting.html', {'meeting': meeting})
+
+   path('meeting/<unique_meeting_name>/',views.meeting,name='meeting'),

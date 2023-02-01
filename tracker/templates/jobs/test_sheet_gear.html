@@ -1,0 +1,259 @@
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400&family=Roboto&family=Rubik:wght@300&display=swap');
+        </style>
+</head>
+{% block title %}
+{% endblock %}
+
+{% block body %}
+<style>
+    .center {
+    margin: auto;
+    }
+    .normal-header{
+        padding-top: 10px;
+        font-size: 21px;
+        font-weight: 500;
+        text-align: center;
+        text-transform: capitalize;
+    }
+    .title-weight{
+        font-weight: 400;
+    }
+    .right-side{
+        float: right;
+    }
+    .table-all{
+border-collapse:collapse;
+}
+.c6 {
+  float: left;
+  width: 50%;
+}
+.c5{
+  float: left;
+  width: 41.667%;
+}
+.c4 {
+    float: left;
+    width: 33.333%;
+}
+.c3 {
+  float: left;
+  width: 25%;
+}
+.center-cells{
+    border:1px solid #d3d3d3;
+    text-align: center;
+}
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.cell-borders{
+border-top:1px solid #d3d3d3;
+padding: 9px;
+text-align: center;
+}
+.compact-borders{
+border-top:1px solid #d3d3d3;
+padding: 5px;
+text-align: center;
+}
+</style>
+<div style="font-family: 'Lato', sans-serif; font-weight: 300">
+    <div class="row">
+        <div class="c6">
+            <span style="font-family: 'Rubik', sans-serif; color: #01579b; font-size: 35px">{{user_properties.company}}</span>
+            <br>
+        </div>
+        <div class="c6" style="font-size: 20px; font-weight: 500; text-align: right;">
+            {{equipment.equipment_type}} <br> Test Report <br>
+            <i style="font-family: 'Rubik', sans-serif; color: #666; font-size: 14px;">Created {{now}}</i>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="c5">
+            <div style="padding-right: 42px;">
+                <div style="padding-top: 10px;">
+                    <span style="font-size: 16px; border-bottom: 1px solid #aaa;">Site Circuit Designation</span>   <br>         
+                    <span style="font-size: 24px;">{{equipment.site_id}}</span>
+                </div>
+                <h3 class="normal-header">Job Information</h3>
+                <table class="table-all center">
+                    <tr>
+                        <td class="title-weight" style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Customer Name</td>
+                        <td style = "padding-left: 7px;">{{job.customer_name}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Job Site Name</td>
+                        <td style = "padding-left: 7px;">{{job.job_site.name}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Owner</td>
+                        <td style = "padding-left: 7px;">{{job.job_site.owner}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Job Name</td>
+                        <td style = "padding-left: 7px;">{{job.job_name}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Address</td>
+                        <td style = "padding-left: 7px;">{{job.job_site.address}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Project Lead</td>
+                        <td style = "padding-left: 7px;">{{job.project_manager}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Tested By</td>
+                        <td style = "padding-left: 7px;">{{test_sheet.testers | default_if_none:""}}</td>
+                    </tr>
+                    <tr style=" border-top: 1px solid #ededed;">
+                        <td class="title-weight"  style= "border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Date</td>
+                        <td style = "padding-left: 7px;">{{test_sheet.date_tested}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="c4">
+            <h3 class="normal-header">Equipment Information</h3>
+            <table class="table-all center" style="width: 100%;">
+                <tr>
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Serial Number
+                    </td>
+                    <td style="padding-left: 7px;">{{equipment.serial_number | default_if_none:"-"}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Equipment Location
+                    </td>
+                    <td style="padding-left: 7px;">{{equipment.equipment_location | default_if_none:"-"}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Manufacturer
+                    </td>
+                    <td style="padding-left: 7px;">{{equipment.equipment_model.model_manufacturer}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Model
+                    </td>
+                    <td style="padding-left: 7px;">{{equipment.equipment_model}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Type
+                    </td>
+                    <td style="padding-left: 7px;">{{equipment.equipment_type}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Equipment Voltage
+                    </td>
+                    <td style="padding-left: 7px;">{{test_sheet.equipment_voltage_data.normalize}} {% if test_sheet.is_dc_equipment_voltage_data %}DC{%else%} AC{%endif%}</td>
+                </tr>
+                
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Frame Rating
+                    </td>
+                    <td style="padding-left: 7px;">{{test_sheet.frame_size}} Amps</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Mount Style</td>
+                    <td style="padding-left: 7px;">{{test_sheet.mount_style}}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Control Voltage
+                    </td>
+                    <td style="padding-left: 7px;">{{test_sheet.control_voltage_data.normalize}} {% if test_sheet.is_dc_control_voltage_data %}DC{%else%}AC{%endif%}</td>
+                </tr>
+                <tr style=" border-top: 1px solid #ededed;">
+                    <td style="border-right: 1px solid #d3d3d3; padding-right: 7px; text-align: right;">Trip Coil Voltage
+                    </td>
+                    <td style="padding-left: 7px;">{{test_sheet.trip_coil_voltage_data.normalize}} {% if test_sheet.is_dc_trip_voltage_data %}DC{%else%}AC{%endif%}</td>
+                </tr>
+            </table>
+        </div></div> <br> <br>
+       
+    
+    </div>
+{% if test_sheet.eq.is_insulation_resistance or test_sheet.eq.is_contact_resistance%}
+    <div class="row">
+        <table class="table-all" style="width: 100%;">
+            <caption style="font-weight: 500; padding-top: 22px; font-size: 18px; ">{% if test_sheet.eq.is_insulation_resistance and test_sheet.eq.is_contact_resistance %}Insulation and Contact Resistance{% elif test_sheet.eq.is_insulation_resistance %}Insulation Resistance{% else %} Contact Resistance{%endif%}
+            </caption>
+            {% if test_sheet.eq.is_insulation_resistance%}
+            <tr>
+                <td class="compact-borders">Phase-to-Phase<br>Insulation Resistance </td>
+                <td class="compact-borders" style="border-right: 1px solid #d3d3d3;">@{{test_sheet.insulation_resistance_ph_to_ph_test_voltage | default_if_none:""}}V</td>
+                <td class="compact-borders">A-B <br> {{test_sheet.insulation_resistance_ph_to_ph_a_b.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_ph_a_b_units}} <span>&#8486</span></td>
+                <td class="compact-borders">B-C <br> {{test_sheet.insulation_resistance_ph_to_ph_b_c.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_ph_b_c_units}} <span>&#8486</span></td>
+                <td class="compact-borders">C-A <br> {{test_sheet.insulation_resistance_ph_to_ph_c_a.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_ph_c_a_units}} <span>&#8486</span></td>
+            </tr>
+            <tr>
+                <td class="compact-borders">Line-to-Load<br>Insulation Resistance </td>
+                <td class="compact-borders" style="border-right: 1px solid #d3d3d3;">@{{test_sheet.insulation_resistance_ln_to_ld_test_voltage | default_if_none:""}} V</td>
+                <td class="compact-borders">A-A' <br> {{test_sheet.insulation_resistance_ln_to_ld_a.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ln_to_ld_a_units}} <span>&#8486</span></td>
+                <td class="compact-borders">B-B' <br> {{test_sheet.insulation_resistance_ln_to_ld_b.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ln_to_ld_b_units}} <span>&#8486</span></td>
+                <td class="compact-borders">C-C' <br> {{test_sheet.insulation_resistance_ln_to_ld_c.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ln_to_ld_c_units}} <span>&#8486</span></td>
+            </tr>
+            <tr>
+                <td class="compact-borders">Phase-to-Ground<br>Insulation Resistance </td>
+                <td class="compact-borders" style="border-right: 1px solid #d3d3d3;">@{{test_sheet.insulation_resistance_ph_to_gr_test_voltage | default_if_none:""}}V</td>
+                <td class="compact-borders">A-G <br>{{test_sheet.insulation_resistance_ph_to_gr_a_g.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_gr_a_g_units}} <span>&#8486</span></td>
+                <td class="compact-borders">B-G <br>{{test_sheet.insulation_resistance_ph_to_gr_b_g.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_gr_b_g_units}} <span>&#8486</span></td>
+                <td class="compact-borders">C-G <br>{{test_sheet.insulation_resistance_ph_to_gr_c_g.normalize | default_if_none:""}} {{test_sheet.insulation_resistance_ph_to_gr_c_g_units}} <span>&#8486</span></td>
+            </tr>
+            {%endif%}
+            {% if test_sheet.eq.is_contact_resistance%}
+            <tr>
+                <td class="compact-borders">Contact Resistance</td>
+                <td class="compact-borders" style="border-right: 1px solid #d3d3d3;">@{{test_sheet.contact_resistance_current | default_if_none:""}} amps</td>
+                <td class="compact-borders">{{test_sheet.contact_resistance_a.normalize | default_if_none:""}} {{test_sheet.contact_resistance_a_units}} <span style="display: none;">&#181</span><span>&#8486</span</td>
+                <td class="compact-borders">{{test_sheet.contact_resistance_b.normalize | default_if_none:""}} {{test_sheet.contact_resistance_b_units}} <span style="display: none;">&#181</span><span>&#8486</span</td>
+                <td class="compact-borders">{{test_sheet.contact_resistance_c.normalize | default_if_none:""}} {{test_sheet.contact_resistance_c_units}} <span style="display: none;">&#181</span><span>&#8486</span</td>
+            </tr>
+            {%endif%}
+        </table>
+</div> <br><br>
+{%endif%}
+{% if test_sheet.eq.is_hipot %}
+<div style="padding-left: 22px;">
+            
+    <table class="table-all" style="width: 100%;">
+        <caption style="font-weight: 500; padding-top: 22px; font-size: 18px; ">High Potential Test 
+        </caption>
+        <tr>
+            <td colspan="4" style="text-align: center;">
+                Tested at {% if test_sheet.hipot_test_voltage %}{{test_sheet.hipot_test_voltage }} {% else %} ______ {% endif %} Volts
+            </td>
+        </tr>
+        <tr>
+            <td class="cell-borders">Phase-to-Phase </td>
+            <td class="cell-borders">A-B <br>{% if test_sheet.hipot_ptp_ab %}  {{test_sheet.hipot_ptp_ab.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">B-C <br>{% if test_sheet.hipot_ptp_bc %}  {{test_sheet.hipot_ptp_bc.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">C-A <br>{% if test_sheet.hipot_ptp_ca %}  {{test_sheet.hipot_ptp_ca.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+        </tr>
+        <tr>
+            <td class="cell-borders">Line-to-Load</td>
+            <td class="cell-borders">A-A' <br>{% if test_sheet.hipot_ltl_a %}  {{test_sheet.hipot_ltl_a.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">B-B' <br>{% if test_sheet.hipot_ltl_b %}  {{test_sheet.hipot_ltl_b.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">C-C' <br>{% if test_sheet.hipot_ltl_c %}  {{test_sheet.hipot_ltl_c.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+        </tr>
+        <tr>
+            <td class="cell-borders">Phase-to-Ground</td>
+            <td class="cell-borders">A-G <br>{% if test_sheet.hipot_ptg_a %} {{test_sheet.hipot_ptg_a.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">B-G <br>{% if test_sheet.hipot_ptg_b %} {{test_sheet.hipot_ptg_b.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+            <td class="cell-borders">C-G <br>{% if test_sheet.hipot_ptg_c %} {{test_sheet.hipot_ptg_c.normalize }} {% else %} ______ {% endif %} milliAmps</td>
+        </tr>
+                       
+    </table>
+
+    
+</div>
+{%endif%}
+
+</div>
+{% endblock %}
