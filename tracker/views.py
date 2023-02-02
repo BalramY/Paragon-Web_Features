@@ -1647,7 +1647,7 @@ def profile(request):
         user_types.append("Customer")
     else:
         user_types.append("Unassigned")
-
+    
     #jobs associated with user
     equipment_supported= properties.equipment_models_supported.all()
     context = {

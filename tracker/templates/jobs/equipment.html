@@ -6,8 +6,8 @@
 
 {% block some_nav %}
     {% with nav_block="something" %}     
-    <a href="{% url 'job' job.id %}" class="breadcrumb span"><span>{{job.job_name}}</span></a>
-    <a href="#!" class="breadcrumb span"><span>{{equipment.site_id}}</span></a>
+    <a href="{% url 'job' job.id %}" class="breadcrumb"><span class="span">{{job.job_name}}</span></a>
+    <a href="#!" class="breadcrumb"><span class="span">{{equipment.site_id}}</span></a>
   
   {% endwith%}
 {% endblock some_nav%}
@@ -24,7 +24,7 @@ Equip | {{equipment.site_id}}
   }
   .span {
         display: inline-block;
-        width: 200px;
+        max-width: 200px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -2507,6 +2507,7 @@ input[type=number] {
         {% if request.user.requester_request %}
         <h5 style="text-align: center">Issues</h5>
           {% for support_request in request.user.requester_request.all|dictsortreversed:"pk" %}
+          {{support_request.request_session}}
           <div>
             <div class="card white">
               <div class="card-content card-padder" >
@@ -2529,11 +2530,14 @@ input[type=number] {
                 {% if support_request.request_session.exists %}
                 <ul class="collapsible z-depth-0 collapsible_support{{support_user.id}}">
                     {% for session in support_request.request_session.all %}
+
                       {% if session.request.is_active %}
                       <li>
                         <div class="collapsible-header"><i class="material-icons">filter_drama</i>Session {{session.id}}:{{session.request}}</div>
                         <div class="collapsible-body">
-                          body
+                          {% if session.offer_session.meeting_link %}
+                          body : <a href="{{session.offer_session.meeting_link}}" target="_blank">Meet Link</a> 
+                          {% endif %}
                         </div>
                       </li>
                       {% endif %}
@@ -2547,6 +2551,11 @@ input[type=number] {
               <div class="card-action">
                 <a class="phone-font-med modal-trigger" style="color: #039be5;" href="#session_modal" onclick="onSessionModal({{ support_request.id}})">Request Session-</a>
                   <a class="phone-font-med" style="color: #039be5;" href="mailto: {{ support_user.user.email }}">{{ support_user.user.email }} | {{ support_request.id}} || Email</a>
+                  {% for session in support_request.request_session.all %}
+                    <span>{% if session.is_declined %}<span style="color: red;"> Declined</span> {% endif %}
+                      {% if session.offer_session.is_active %}<span style="color: #039be5;">Accepted</span> {% endif %}
+                    </span>
+                  {% endfor %}
                 </div>
             </div>
           </div>

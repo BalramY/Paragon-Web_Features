@@ -24,7 +24,9 @@ from .models import Job, JobFolder, Type, Manufacturer, EquipmentFolder, Model, 
     JobSiteNotes, BusContactTestData, JobSiteFolder, Company, FeedbackFile, FeedbackNote, WorkingNote, TestSheet, TypeNotes, ModelNotes, \
     Well, WellNotes, MaintEvent, MaintFile, MaintNotes, GenericFile, GenericNote, SupportOffer, SupportSession, SupportRequest, \
     ScopeItem, ScopeTask, SafetySheet, SafetyHazard, LotoDescription, SafetyBoolean, Signature, STATUS_PENDING
-
+import base64
+import random
+import string
 
 def create_profile(request):
     if not request.user.is_authenticated:
@@ -5694,6 +5696,8 @@ def session_decline_toggle(request):
             support_offer.request.save()
         else:
             support_offer.is_declined = False
+        session = SupportSession.objects.filter(offer=support_offer)
+        session.update(meeting_link="", is_active = False)
         support_offer.save()
         # session = SupportSession.objects.get(offer = support_offer)
         # session.is_active = False
@@ -5706,6 +5710,10 @@ def session_accept_toggle(request):
     request_id = request.POST.get('request_id', None)
     boolean = request.POST.get('bool', None)
     meeting_link = request.POST.get('meeting_link', None)
+    random_string = ''.join(random.choices(string.ascii_letters +
+                             string.digits, k=10))
+    token = base64.b64encode(random_string.encode('utf-8')).decode('utf-8')
+    meeting_link += token
     # for each in SupportRequest.objects.all():
     #     each.is_active = True
     #     each.save()
@@ -5714,8 +5722,8 @@ def session_accept_toggle(request):
     #     each.save()
     if request_id and boolean:
         offer = SupportOffer.objects.get(pk=request_id)
-        support_request_object = SupportRequest.objects.filter(request=offer)
-        support_request_object.update(meeting_link=meeting_link)
+        session = SupportSession.objects.filter(offer=offer)
+        session.update(meeting_link=meeting_link,is_active = True)
         support_request = offer.request
         if boolean == "true":
             support_request.is_active = True
@@ -5727,7 +5735,8 @@ def session_accept_toggle(request):
         # session.is_active = True
         support_request.save()
 
-    return JsonResponse({"response": support_request.is_active})
+    return JsonResponse({"response": support_request.is_active,
+                         "meeting_link": meeting_link})
 
 def issue_resolved_toggle(request):
     request_id = request.POST.get('request_id', None)
