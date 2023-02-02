@@ -5697,7 +5697,7 @@ def session_decline_toggle(request):
         else:
             support_offer.is_declined = False
         session = SupportSession.objects.filter(offer=support_offer)
-        session.update(meeting_link="", is_active = False)
+        session.update(meeting_link="", is_active=False)
         support_offer.save()
         # session = SupportSession.objects.get(offer = support_offer)
         # session.is_active = False
@@ -5727,7 +5727,7 @@ def session_accept_toggle(request):
         support_request = offer.request
         if boolean == "true":
             support_request.is_active = True
-            support_request.request_session.update(is_declined = False)
+            support_request.request_session.update(is_declined=False)
             # support_request.request_session.save()
         else:
             support_request.is_active = False

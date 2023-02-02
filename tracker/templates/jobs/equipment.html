@@ -2171,8 +2171,13 @@ input[type=number] {
     </div> 
   </div>
   <div id="resources" class="col s12">
+    <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
+        <li class="tab col s2 noselect"><a href="#model_equipment">Model</a></li>
+        <li class="tab col s3 noselect"><a href="#type_equipment">Type</a></li>
+    </ul>
+    
 
-    <div class="">
+    <div id="model_equipment" class="col s12">
       {% if equipment.equipment_model %}
       <div class="card white z-depth-0" >
         <div class="card-content">
@@ -2309,7 +2314,7 @@ input[type=number] {
    
      </div>   
      
-    <div class="">
+    <div id="type_equipment" class="col s12">
       {% if equipment.equipment_type %}
       <div class="card white z-depth-0" style="margin-right: 0; margin-left: 0;">
         <div class="card-content"  >
