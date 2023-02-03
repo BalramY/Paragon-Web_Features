@@ -289,6 +289,25 @@ def job(request, job_id):
     available_test_equipments = TestEquipment.objects.exclude(id__in=existing_test_equipment_ids)
     test_equipments = json.dumps(list(TestEquipment.objects.values_list('name', flat=True)))
 
+    equipment_ids = []
+    if job:
+        for eq in job.equipment.all():
+            equipment_ids.append(eq.site_id)
+    json_equipment_ids = json.dumps(equipment_ids)
+    manufacturers = Manufacturer.objects.all()
+    test_equipments_data = TestEquipment.objects.all()
+    test_equipment_list = json.dumps(list(TestEquipment.objects.values_list('name', flat=True)))
+    models = Model.objects.all()
+    #get list of all site_ids on the site
+    stripped_trashed_site_ids = []
+    stripped_trashed_ids = []
+    if job_id:
+        trashed_eq = job.equipment.filter(trashed=True).values_list('site_id', flat=True)
+        stripped_trashed_ids=[sub[ : -31] for sub in trashed_eq]
+        site_ids = json.dumps(list(Equipment.objects.filter(job_site=job.job_site).values_list('site_id', flat=True)))
+        trashed_site_eq = Equipment.objects.filter(job_site=job.job_site, trashed=True).values_list('site_id', flat=True)
+        stripped_trashed_site_ids=[sub[ : -31] for sub in trashed_site_eq]
+
     context= {
         "job": job,
         "job_id": job_id,
@@ -316,8 +335,17 @@ def job(request, job_id):
         "default_quote": round(quoted_hours*255.0, 2),
         "available_test_equipments": available_test_equipments,
         "test_equipments": test_equipments,
-    }
     
+        "manufacturers": manufacturers,
+        "models": models,
+        "test_equipments_data": test_equipments_data,
+        "test_equipment_list": test_equipment_list,
+        "json_equipment_ids": json_equipment_ids,
+        # "job_site": job_site,
+        "site_ids": site_ids,
+        "stripped_trashed_site_ids":stripped_trashed_site_ids,
+        "stripped_trashed_ids":stripped_trashed_ids
+    }
     # The below code can be activated to create a copy of a job when that job is viewed. Use only for copying jobs for example jobs
     # new_job = job
     # new = new_job

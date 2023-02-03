@@ -710,6 +710,18 @@ input[type=number] {
 .tab > a:hover{  
   text-decoration: none !important;
 }
+.tab{
+    width: 280px;
+}
+.scrolltabs{
+    display: flex;
+    justify-content: space-between;
+}
+@media screen and (max-width:576px){
+    .scrolltabs{
+    overflow-x: scroll;
+}
+}
 </style>
 
 <script>
@@ -796,12 +808,12 @@ input[type=number] {
 
 <div class="row main-container">
   <div class="col s12">
-    <ul class="tabs tabs1" id="#tabs1">
-      <li class="tab col s2 noselect"><a href="#description">Description</a></li>
-      <li class="tab col s3 noselect"><a href="#testreport">Test Report</a></li>
-      <li class="tab col s3 noselect"><a href="#notes_files">Notes/Files</a></li>
-      <li class="tab col s2 noselect"><a href="#resources">Resources</a></li>
-      <li class="tab col s2 noselect"><a href="#internal_support">Support</a></li>
+    <ul class="tabs tabs1 scrolltabs" id="#tabs1">
+      <li class="tab noselect"><a href="#description">Description</a></li>
+      <li class="tab noselect"><a href="#testreport">Test Report</a></li>
+      <li class="tab noselect"><a href="#notes_files">Notes/Files</a></li>
+      <li class="tab noselect"><a href="#resources">Resources</a></li>
+      <li class="tab noselect"><a href="#internal_support">Support</a></li>
     </ul>
   </div>
   <div id="description" class="col s12">
@@ -2172,12 +2184,210 @@ input[type=number] {
   </div>
   <div id="resources" class="col s12">
     <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
-        <li class="tab col s2 noselect"><a href="#model_equipment">Model</a></li>
-        <li class="tab col s3 noselect"><a href="#type_equipment">Type</a></li>
+        <li class="tab noselect"><a href="#model_equipment">Model</a></li>
+        <li class="tab noselect"><a href="#type_equipment">Type</a></li>
     </ul>
-    
-
     <div id="model_equipment" class="col s12">
+        <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
+            <li class="tab noselect"><a href="#model_files">Model Files/Links</a></li>
+            <li class="tab noselect"><a href="#model_manufacture">Manufacture Support</a></li>
+            <li class="tab noselect"><a href="#model_videos">Videos</a></li>
+            <li class="tab noselect"><a href="#model_notes">Model Notes</a></li>
+        </ul>
+    </div>
+    <div id="type_equipment" class="col s12">
+        <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
+            <li class="tab noselect"><a href="#test_standards">Test Standards</a></li>
+            <li class="tab noselect"><a href="#type_files">Type Files/Links</a></li>
+            <li class="tab noselect"><a href="#type_videos">Videos</a></li>
+            <li class="tab noselect"><a href="#type_notes">Type Notes</a></li>
+        </ul>
+    </div>
+
+    <div id="model_files" class="col s12">
+        <div class=" phone-font-med" id="model_0">
+            {% csrf_token %}
+            {% if model_files %}
+            <ul class="collection last-child-border" style="border: none;">
+            {% for file in model_files %}
+            
+            <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
+                {% if file.model_file %}
+                <a href="{{file.model_file.url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;"  >
+                <i class="material-icons left phone-font-med">insert_drive_file</i>
+                {% if file.file_name %}
+                    {{file.file_name}}
+                {% else %}
+                    {{file.filename}}
+                {% endif %}
+                </a>
+                {% endif %}
+                {% if file.file_url %}
+                <a href="{{file.file_url}}" target="_blank" class=" phone-font-med"  style="word-wrap: break-word; padding: 0;">
+                    <i class="material-icons left phone-font-med">link</i>
+                    {% if file.file_name %}
+                    {{file.file_name}}
+                    {% else %}
+                    {{file.hostname}}
+                    {% endif %}
+                </a>
+                {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <h6>No Files</h6>
+            {% endif %}
+        </div>
+    </div>
+    <div id="model_manufacture" class="col s12">
+        <div class=" phone-font-med" id="model_1" style="word-wrap:break-word;">
+            {% if equipment.equipment_model.model_manufacturer.customer_support %}
+            <span class="subtle-u">{{equipment.equipment_model.model_manufacturer}} General Support</span><br>
+            <span style=" white-space: pre-wrap;">{{equipment.equipment_model.model_manufacturer.customer_support}}</span><br><br>
+            {% endif %}
+            {% if equipment.equipment_model.model_customer_support %}
+            <span class="subtle-u">{{equipment.equipment_model}} Support</span><br><span style=" white-space: pre-wrap;">{{equipment.equipment_model.model_customer_support}}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div id="model_videos" class="col s12">
+        <div class="" id="model_2" style="overflow: hidden;">
+          {% if model_guides %}
+            {% for guide in model_guides %}
+              <h6 style="color: black;">{{guide.title}}</h6>
+              <video controls="controls" controlsList=”nodownload” width="98%" height="auto" preload="metadata">
+                <source src="{{guide.model_test_guide.url}}" type="video/mp4"></video>
+            {% endfor %}
+          {% else %} <span class="phone-font-med"> None <a href="{% url 'eq_model' equipment.equipment_model.id %}"><i>Add video to this model</i></a></span>
+          {% endif %}
+        </div>
+    </div>
+    <div id="model_notes"  class="col s12">
+        <div class="phone-font-sml" id="model_3" > 
+          <div class="container">
+            <div class="row">
+              <div class="search-div" id="model_note-container" style="margin-left: 52px; float: right; position: -webkit-sticky; position: sticky;">
+                <input class="orange-underline search-input" id="search_model_note" type="text" placeholder="Search..."/>
+                  <div class="noselect phone-font-med" id="model_note-move-text" style="display: none; color: #888">
+                    <span id="model_note-matched-text"></span>
+                    <div style="float: right">
+                      <span class="phone-font-xl hover-item search-arrows comp-font-ml " onclick="previousSearchNote('model_note'); " id="model_note-previous-text" >▲
+                      </span>
+                      <span class=" phone-font-xl hover-item search-arrows comp-font-ml  " onclick="nextSearchNote('model_note') " id="model_note-next-text">▼
+                      </span>
+                    </div>  
+                  </div>
+                </div>
+                <button id="search_model_note_button" onclick="searchNote('model_note', 'model_note_child_toggle', 'model_note-content');$('#model_note-container').parent().addClass('sticky-top'); headerLeft()" hidden>Search</button>
+              </div>
+            {% for note in model_notes %}
+              {% include "jobs/job_note_data_new.html" with note=note note_type='model_note' %}
+            {% empty %}
+            No model notes have been added.
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+
+    <div id="test_standards" class="col s12">
+            <div class="phone-font-med" style="overflow-x:auto;" id="type_0">
+              {% if type_ts %}
+              <table class="highlight">
+                <tr>
+                  <th>Name</th>
+                  <th>Standard</th>
+                  <th class="computer-screen">Description</th>
+                </tr>
+              {% for ts in type_ts %}
+                <tr>
+                  <td>
+                    {% if ts.ts_url %}<a href="{{ts.ts_url}}"  target="_blank" ><i class="material-icons phone-font-ml left">link</i>{{ts.ts_name|default_if_none:'unnamed'}}</a>{% endif %}
+                    {% if ts.ts_file %}<a href="{{ts.ts_file.url}}"  target="_blank" ><i class="material-icons phone-font-ml left">insert_drive_file</i>{{ts.ts_name|default_if_none:'unnamed'}}</a>{% endif %}                        
+                  </td>
+                  <td style="text-align: center;">{% if ts.ts_standard %}{{ts.ts_standard}}{% else %} <span style="color: #aaa;">Undefined</span>  {% endif %}</td>
+                  <td class="computer-screen">{{ts.ts_description}}</td>
+                </tr>
+              {% endfor %}
+          </table>
+              {% else %}No testing standards have been added
+              {% endif %}
+            </div>
+    </div>
+    <div id="type_files" class="col s12">
+            <div class="phone-font-sml" id="type_1" style="overflow: hidden;">
+              {% csrf_token %}
+              {% if type_files %}
+                <ul class="collection last-child-border">
+                  {% for file in type_files %}
+                  <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
+                    {% if file.type_file %}
+                    <a href="{{file.type_file.url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
+                       <i class="material-icons left phone-font-med">insert_drive_file</i>
+                      {% if file.file_name %}
+                      {{file.file_name}}
+                      {% else %}
+                      {{file.filename}}
+                      {% endif %}
+                    </a>
+                    {% endif %}
+                    {% if file.file_url %}
+                    <a href="{{file.file_url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
+                    <i class="material-icons left phone-font-med">link</i>
+                        {% if file.file_name %}
+                        {{file.file_name}}
+                        {% else %}
+                        {{file.hostname}}
+                        {% endif %}      
+                      </a>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                  <h6>No Files</h6>
+              {% endif %}
+            </div>
+    </div>
+    <div id="type_videos" class="col s12">
+            <div id="type_2" style="overflow: hidden;"> 
+              {% if type_guides %}
+                {% for guide in type_guides %}
+                  <h6 style="color: black;">{{guide.title}}</h6>
+                  <video controls="controls" controlsList=”nodownload” width="98%" height="auto" preload="metadata">
+                    <source src="{{guide.type_test_guide.url}}" type="video/mp4"></video>
+                {% endfor %}
+              {% else %} <span class="phone-font-med"> None. <a href="{% url 'eq_type' equipment.equipment_type.id %}"><i>Add video to this type</i></a></span>
+              {% endif %}
+            </div>
+    </div>
+    <div id="type_notes" class="col s12">
+        <div class="phone-button-sml" id="type_3"> 
+            <div class="container">
+            <div class="row">
+                <div class="search-div" id="type_note-container" style="margin-left: 52px; float: right; position: -webkit-sticky; position: sticky;">
+                <input class="orange-underline search-input" id="search_type_note" type="text" placeholder="Search..."/>
+                    <div class="noselect phone-font-med" id="type_note-move-text" style="display: none; color: #888">
+                    <span id="type_note-matched-text"></span>
+                    <div style="float: right">
+                        <span class="phone-font-xl hover-item search-arrows comp-font-ml " onclick="previousSearchNote('type_note')" id="type_note-previous-text" >▲
+                        </span>
+                        <span class=" phone-font-xl hover-item search-arrows comp-font-ml  " onclick="nextSearchNote('type_note')" id="type_note-next-text">▼
+                        </span>
+                    </div>  
+                    </div>
+                </div>
+                <button id="search_type_note_button" onclick="searchNote('type_note', 'type_note_child_toggle', 'type_note-content');$('#type_note-container').parent().addClass('sticky-top'); headerLeft()" hidden>Search</button>
+                </div>
+                {% for note in type_notes %}
+                {% include "jobs/job_note_data_new.html" with note=note note_type='type_note' %}
+                {% empty %}
+                No type notes have been added.
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!-- <div id="model_equipment" class="col s12">
       {% if equipment.equipment_model %}
       <div class="card white z-depth-0" >
         <div class="card-content">
@@ -2466,8 +2676,8 @@ input[type=number] {
       {% else %}
       <h6>No type is associated with this piece of equipment.</h6>
       {% endif %}
-    </div>    
-  </div>
+    </div>     -->
+  <!-- </div> -->
   <div id="internal_support" class="col s12" style="padding-top:20px">
     <div class="row">
       <div class="col s12">

@@ -203,6 +203,11 @@ h5{
   color: #023b59;
   text-align: center;
 }
+.modal{
+  max-height: 80%;
+  width: 70%;
+  border-radius: 5px;
+}
 </style>
 <div class="container" id="job_preloader">
   <div class="progress" style="padding-top: 20px;">
@@ -586,13 +591,15 @@ h5{
         </a></li>
         </ul>
 
-       
-       
-
         <a class='dropdown-trigger dropdown-auto btn-small phone-font-lrg phone-button phone-btn-spacer secondary-act z-depth-0' href='#' data-target='equip_actions'> Options <i class="material-icons right">menu</i> </a>
         <a class="dropdown-trigger dropdown-auto waves-effect waves-light btn-small phone-button phone-btn-spacer" style="display: none;" href="#" data-target="add_eq_dropdown">Equipment Assembly</a>
-        <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >Quick Add</a>
-
+        <!-- <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >Quick Add</a> -->
+        <a class="waves-effect waves-light modal-trigger phone-button btn-small phone-btn-spacer" id="add_eq_button" href="#modal1">Quick Add</a>
+        <div id="modal1" class="modal">
+          <div class="modal-content">
+            {% include './new_add_equipment.html' %}
+          </div>
+        </div>
         <span id="eq_assembly_help" class="help-btn hover-item"><i class="material-icons-outlined inline-icon">info</i></span>
         <ul id="add_eq_dropdown" class="dropdown-content">
         </ul>
