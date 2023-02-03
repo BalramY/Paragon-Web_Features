@@ -133,12 +133,12 @@ display: none;
                     {% csrf_token %}           
                     <div class="switch active-switch" id="active-switch-{{request.id}}" {% if request.is_declined %}style="display: none"{% endif %}>
                       <label  style="white-space: nowrap;color: #039be5">
-                        <input type="checkbox" class="quick-tog blue" onchange="acceptToggle('{{request.id}}', this)" {% if request.request.is_active %}checked="checked"{% endif %}  id="active_input_{{request.id}}" name="active_input_{{request.id}}">
+                        <input type="checkbox" class="quick-tog blue" onchange="acceptToggle('{{request.id}}', this)" {% if request.offer_session.is_accepted %}checked="checked"{% endif %}  id="active_input_{{request.id}}" name="active_input_{{request.id}}">
                         <span class="lever"></span>
                         Accept
                       </label>
                     </div>   
-                    <div class="switch decline-switch" id="decline-switch-{{request.id}}" {% if request.request.is_active %}style="display: none"{% endif %} style="padding-top: 7px;">
+                    <div class="switch decline-switch" id="decline-switch-{{request.id}}" {% if request.offer_session.is_accepted %}style="display: none"{% endif %} style="padding-top: 7px;">
                       <label  style="white-space: nowrap;">
                         <input type="checkbox" class="quick-tog red lighten-3" onchange="declineToggle('{{request.id}}', this)" {% if request.is_declined  %}checked="checked"{% endif %} id="decline_input_{{request.id}}" name="decline_input_{{request.id}}">
                         <span class="lever"></span>
@@ -238,7 +238,7 @@ display: none;
       success: function(data) {
         console.log(td_id)
           if(data.response){
-            $(td_id).children('p').append(`<a href="${data.meeting_link}" target="_blank">Meet link</a>`)
+            $(td_id).children('p').append(`<a href="${data.meeting_link}" target="_blank">Open Meeting</a>`)
             $('#decline-switch-'+request_id).hide()
             $('#decline_input_'+request_id).prop("checked", false)
           }else{
