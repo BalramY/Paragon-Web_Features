@@ -5686,53 +5686,40 @@ def create_request(request):
 
 def session_decline_toggle(request):
     valid = True
-    request_id = request.POST.get('request_id', None)
+    offer_id = request.POST.get('request_id', None)
     boolean = request.POST.get('bool', None)
-    if request_id and boolean:
-        support_offer = SupportOffer.objects.get(pk=request_id)
+    if offer_id and boolean:
+        support_offer = SupportOffer.objects.get(pk=offer_id)
         if boolean == "true":
             support_offer.is_declined = True
-            support_offer.request.is_active = False
-            support_offer.request.save()
-        else:
+            support_offer.offer_session.is_accepted = False
+            support_offer.offer_session.save()
+        elif boolean == "false":
             support_offer.is_declined = False
         session = SupportSession.objects.filter(offer=support_offer)
-        session.update(meeting_link="", is_active=False)
+        session.update(meeting_link="", is_accepted=False)
         support_offer.save()
-        # session = SupportSession.objects.get(offer = support_offer)
-        # session.is_active = False
-        # session.save()
-
     return JsonResponse({"response": support_offer.is_declined})
 
 def session_accept_toggle(request):
     valid = True
-    request_id = request.POST.get('request_id', None)
+    offer_id = request.POST.get('request_id', None)
     boolean = request.POST.get('bool', None)
+    print(boolean)
     meeting_link = request.POST.get('meeting_link', None)
     random_string = ''.join(random.choices(string.ascii_letters +
                              string.digits, k=10))
     token = base64.b64encode(random_string.encode('utf-8')).decode('utf-8')
     meeting_link += token
-    # for each in SupportRequest.objects.all():
-    #     each.is_active = True
-    #     each.save()
-    # for each in SupportOffer.objects.all():
-    #     each.is_declined = False
-    #     each.save()
-    if request_id and boolean:
-        offer = SupportOffer.objects.get(pk=request_id)
+    if offer_id and boolean:
+        offer = SupportOffer.objects.get(pk=offer_id)
         session = SupportSession.objects.filter(offer=offer)
-        session.update(meeting_link=meeting_link,is_active = True)
         support_request = offer.request
         if boolean == "true":
-            support_request.is_active = True
             support_request.request_session.update(is_declined=False)
-            # support_request.request_session.save()
-        else:
-            support_request.is_active = False
-        # session = SupportSession.objects.get(offer = support_offer)
-        # session.is_active = True
+            session.update(meeting_link=meeting_link,is_accepted = True)
+        elif boolean == "false":
+            session.update(is_accepted = False)
         support_request.save()
 
     return JsonResponse({"response": support_request.is_active,
@@ -5741,12 +5728,6 @@ def session_accept_toggle(request):
 def issue_resolved_toggle(request):
     request_id = request.POST.get('request_id', None)
     boolean = request.POST.get('bool', None)
-    # for each in SupportRequest.objects.all():
-    #     each.is_active = True
-    #     each.save()
-    # for each in SupportOffer.objects.all():
-    #     each.is_declined = False
-    #     each.save()
     if request_id and boolean:
         request = SupportRequest.objects.get(pk=request_id)
         print(request.description)

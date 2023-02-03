@@ -616,7 +616,7 @@ def equipment_folder_path(instance, filename):
 class SupportRequest(models.Model):
     description = models.TextField(null=True, blank=True)
     details = models.TextField(null=True, blank=True)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False) #not used
     is_resolved = models.BooleanField(default=False)
     equipment = models.ForeignKey(Equipment, on_delete=models.CASCADE, related_name="eq_request", null=True, blank=True)
     requester = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='requester_request')
@@ -633,7 +633,7 @@ class SupportOffer(models.Model):
 class SupportSession(models.Model):
     note =  models.ManyToManyField('GenericNote', blank=True, related_name="note_session")
     offer = models.OneToOneField(SupportOffer, on_delete=models.CASCADE, related_name="offer_session", null=True, blank=True)
-    is_active = models.BooleanField(default=False)
+    is_accepted = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     meeting_link = models.CharField(max_length=1000, null=True, blank=True)
