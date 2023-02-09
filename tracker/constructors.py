@@ -6681,3 +6681,30 @@ def add_maint_file(request, maint_id):
             maint_file.save()
         
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def toggle_scope_item(request):
+    if not request.user.is_authenticated:
+        return render(request, "jobs/login.html", {"message": None})
+    job_obj = Job.objects.filter(id=request.POST.get("job_id")).first()
+    description = request.POST.get("description")
+    if request.POST.get("is_complete", False):
+        is_complete = True
+    else:
+        is_complete = False
+    ScopeItem.objects.create(job=job_obj, description=description,
+                             is_complete=is_complete, created_by=request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def toggle_scope_task(request):
+    if not request.user.is_authenticated:
+        return render(request, "jobs/login.html", {"message": None})
+    scope_obj = ScopeItem.objects.filter(
+              id=request.POST.get("scope_id")).first()
+    description = request.POST.get("task_title")
+    if request.POST.get("is_complete", False):
+        is_complete = True
+    else:
+        is_complete = False
+    ScopeTask.objects.create(task_item=scope_obj, task_title=description,
+                             is_complete=is_complete, created_by=request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

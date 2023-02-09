@@ -184,4 +184,7 @@ urlpatterns = [
     path("ag_edit_well/<int:well_id>", constructors.ag_edit_well, name="ag_edit_well"),
     path("ag_edit_maint/<int:maint_id>", constructors.ag_edit_maint, name="ag_edit_maint"),
     path("add_maint_file/<int:maint_id>", constructors.add_maint_file, name="add_maint_file"),
+
+    path("add_scope_item", constructors.toggle_scope_item, name="scope-item"),
+    path("add_scope_task", constructors.toggle_scope_task, name="scope-task")
 ]

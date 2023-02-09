@@ -1368,16 +1368,42 @@ caption{
     </div>
 
     <div id="job_scope" class="mobile-container col s12 hidencontent">
-      <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >+ Scope Item</a>
+        <div class="row">
+            <div class="col s12">
+                <a class="waves-effect waves-light btn-small" id="scope_item_toggle" onclick="toggleItem('request_scope_div'); $(this).hide()">+ Scope Item</a>
+            </div>
+            <div class="row" style="padding: 10px;">
+                <div class="col s12 m12 l8 xl4" id="request_scope_div" style="display: none; padding-top: 25px; padding-bottom: 25px;">
+                <form id="request_form" action="{% url 'scope-item' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}            
+                    <input id="job_id" name="job_id" value={{job.id}} hidden>
+                    <div class="input-field" style="margin:auto; padding-bottom: 25px;">
+                    <label class="active" for="description">Description<span style="color: #ff7f7f; font-size: 12px;" >(required)</span></label>
+                        <textarea id="description" name="description" required class="materialize-textarea active" placeholder="i.e. Testing Transformer Differential" ></textarea>              
+                    </div>    
+                    <label>
+                        <input type="checkbox" class="filled-in" name="is_complete" value="" 
+                            id="scope_status" onclick="scopestatus()"/>
+                        <span>Completed</span>
+                    </label>
+                    <div style="padding-top: 10px;"> 
+                    <button class="btn-small left phone-button" >Cancel</button>
+                    <button class="btn-small right phone-button" type="submit"><i class="material-icons left phone-font-lrg ">add</i> Add</button>
+                    </div>
+                </form>    
+                </div>
+            </div>
+       </div>
       {% if job.job_scope_item %}
-        <table class="highlight">    
-          <tr>
+      <table class="highlight">    
+        <tr>
             <th>Description</th>
             <th>Tasks</th>
-          </tr> 
+            <th></th>
+        </tr> 
           {% for scope_item in job.job_scope_item.all %}
             <tr>
-              <td>{{scope_item.description}</td>
+              <td>{{scope_item.description}}</td>
               <td>
                 {% for task in scope_item.scope_item_task.all %}
                 {{task.task_title}}<br>
@@ -1385,9 +1411,32 @@ caption{
                 No Tasks
                 {% endfor %}
               </td>
+              <td>
+                <a class="waves-effect waves-light btn-small" onclick='toggleItem("scope_task_div_{{scope_item.id}}"); $(this).hide()''>+ Add Task</a>
+                <div class="row" style="padding-top: 10px;">
+                    <div class="col s12 m12 l10 xl10" id="scope_task_div_{{scope_item.id}}" style="display: none;">
+                    <form  action="{% url 'scope-task' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}            
+                        <input id="scope_id" name="scope_id" value={{scope_item.id}} hidden>
+                        <div class="input-field" style="margin:auto; padding-bottom: 25px;">
+                        <label class="active" for="task_title">Task Title<span style="color: #ff7f7f; font-size: 12px;" >(required)</span></label>
+                            <textarea  name="task_title" required class="materialize-textarea active" placeholder="i.e. Testing Transformer Differential" ></textarea>              
+                        </div>    
+                        <label>
+                            <input type="checkbox" class="filled-in" name="is_complete" value="" 
+                                id="task_status{{scope_item.id}}" onclick="taskstatus('{{scope_item.id}}')"/>
+                            <span>Completed</span>
+                        </label>
+                        <div style="padding-top: 10px;"> 
+                        <button class="btn-small left phone-button" >Cancel</button>
+                        <button class="btn-small right phone-button" type="submit"><i class="material-icons left phone-font-lrg ">add</i> Add</button>
+                        </div>
+                    </form>    
+                    </div>
+                </div>
+                
+              </td>
             </tr>
-            {{scope_item.description}}
-          <h6>No Scope Items Added</h6>
           {%endfor%}
         </table>
       {% endif %}
@@ -2668,6 +2717,26 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 <script>
+    function toggleItem(item){
+        $('#'+item).toggle()
+    }
+    function scopestatus(){
+        let value = $("#scope_status").val()
+        if(value){
+            $("#scope_status").val("")
+        }else{
+            $("#scope_status").val("true")
+        }
+    }
+
+    function taskstatus(id){
+        let value = $("#task_status"+id).val()
+        if(value){
+            $("#task_status"+id).val("")
+        }else{
+            $("#task_status"+id).val("true")
+        }
+    }
 
   function addNoteModal(pk, name){
     $('#eq_name_add_note').html(name)
@@ -2714,12 +2783,10 @@ function editSiteIds(){
 function checkChild(check_id, checked){
   //get child
   var children = $('.childof-'+check_id)
-    console.log(check_id)
 
   //get child id
   if(checked){
     children.prop('checked', true)
-    console.log(children)
   }else{
     children.prop('checked', false)
   }
