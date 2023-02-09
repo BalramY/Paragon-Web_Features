@@ -26,7 +26,9 @@ class Company(models.Model):
     name= models.CharField(max_length=128)
     job_safety_analysis = models.FileField(max_length=500, null=True, blank=True, upload_to = upload_company_jsa_path) 
     time_sheet = models.FileField(max_length=500, null=True, blank=True, upload_to = upload_company_time_sheet) 
-    
+    updated_at = models.DateTimeField(auto_now=True,)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_delete = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.name}"
 
@@ -43,6 +45,9 @@ STATUS_LIST = [
 class TestEquipment(models.Model):
     name = models.CharField(max_length=64, unique=True)
     notes = models.TextField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_delete = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.name}"
@@ -66,9 +71,9 @@ def upload_type_ansi_path(instance, filename):
     path= "types/"+instance.name+"_"+str(instance.pk)+"/teststandards/ansi"
     return path
     
-    
 class Type(models.Model):
     name = models.CharField(max_length=256)
+    is_delete = models.BooleanField(default=False)
     type_folder = models.URLField(null = True, blank = True) #Need to ensure all items are in url format first
     mandatory_type_test_equipment = models.ManyToManyField(TestEquipment, blank=True, related_name="mandatory_type_test_equipment")
     optional_type_test_equipment = models.ManyToManyField(TestEquipment, blank=True, related_name="optional_type_test_equipment")
@@ -100,8 +105,33 @@ class Type(models.Model):
     is_cable_vlf_withstand_test=models.BooleanField(default=False)
     is_ttr=models.BooleanField(default=False)
     is_xfmr_insulation_resistance=models.BooleanField(default=False)
+    is_power_meter=models.BooleanField(default=False)
+    is_mv_cable=models.BooleanField(default=False)
+    is_cpt=models.BooleanField(default=False)
+    is_vt=models.BooleanField(default=False)
+    is_lv_switch=models.BooleanField(default=False)
+    is_mv_air_switch=models.BooleanField(default=False)
+    is_lv_pcb=models.BooleanField(default=False)
+    is_mvc=models.BooleanField(default=False)
+    is_mv_mcc=models.BooleanField(default=False)
+    is_mv_air_breaker=models.BooleanField(default=False)
+    is_sf6_breaker=models.BooleanField(default=False)
+    is_of_xfmr=models.BooleanField(default=False)
+    is_dry_mv_xfmr=models.BooleanField(default=False)
+    is_vt=models.BooleanField(default=False)
+    is_ct=models.BooleanField(default=False)
+    is_cpt=models.BooleanField(default=False)
+    is_lv_swbd=models.BooleanField(default=False)
+
     status = models.CharField(choices=STATUS_LIST, null=True, blank=True, max_length=16)
     is_bus_resistance=models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # @property
+    # def is_(self):
+    #     if self.hierarchy_level:
+    #         return f'{20 * self.hierarchy_level}px'
+
 
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="eq_type_company")
     objects = TypeManager()
@@ -135,7 +165,7 @@ class TypeNotes(models.Model):
     parent_note = models.ForeignKey('self', on_delete=models.CASCADE, related_name="sub_notes", null=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_type_note")
-
+    is_delete = models.BooleanField(default=False)
     @property
     def hierarchy_level(self):
         return get_hierarchy_level(self)
@@ -157,6 +187,11 @@ class TypeNotes(models.Model):
         if user:
             return f'{user.first_name} {user.last_name}'
         return 'Anonymous'
+    
+    def save(self, *args, **kwargs):
+        if self.eq_type:
+            Type.objects.filter(id=self.eq_type.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 
 class TypeFolder(models.Model):
@@ -166,12 +201,19 @@ class TypeFolder(models.Model):
     eq_type = models.ForeignKey(Type, null=True, on_delete=models.CASCADE, blank=True, related_name="eq_type")
     is_private = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_type_file")    
+    is_delete = models.BooleanField(default=False)
     @property
     def hostname(self):
         return urllib.parse.urlparse(self.file_url).hostname
     def filename(self):
         return os.path.basename(self.type_file.name)
+
+    def save(self, *args, **kwargs):
+        if self.eq_type:
+            Type.objects.filter(id=self.eq_type.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 class TypeTestStandards(models.Model):
     ts_file=models.FileField(max_length=500, null=True, blank = True, upload_to = type_ts_path)
@@ -181,12 +223,18 @@ class TypeTestStandards(models.Model):
     ts_url=models.URLField(max_length=500, null=True, blank=True)
     ts_type = models.ForeignKey(Type, null=True, on_delete=models.CASCADE, blank=True, related_name="eq_type_standards")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey('UserProperties', on_delete=models.CASCADE, null=True, blank=True, related_name="user_test_standard")
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_ts")
-
+    is_delete = models.BooleanField(default=False)
     def filename(self):
         return os.path.basename(self.ts_file.name)
+
+    def save(self, *args, **kwargs):
+        if self.ts_type:
+            Type.objects.filter(id=self.ts_type.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 def type_testguide_path(instance, filename):
     try:
@@ -202,10 +250,17 @@ class TypeTestGuide(models.Model):
     title = models.TextField(null = True, blank = True)
     definition = models.TextField(null = True, blank = True)
     created_at=models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_type_video")
+    is_delete = models.BooleanField(default=False)
     def filename(self):
         return os.path.basename(self.type_test_guide.name)
+
+    def save(self, *args, **kwargs):
+        if self.eq_type:
+            Type.objects.filter(id=self.eq_type.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 class ManufacturerManager(models.Manager):
     def create_manufacturer(self, name):
@@ -216,7 +271,9 @@ class ManufacturerManager(models.Manager):
 class Manufacturer(models.Model):
     name = models.CharField(max_length=64, unique=True)
     customer_support = models.TextField(null = True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_delete = models.BooleanField(default=False)
     objects = ManufacturerManager()
     def __str__(self):
         return f"{self.name}"
@@ -235,7 +292,9 @@ def upload_model_tg_path(instance, filename):
 
 class Model(models.Model):
     name = models.CharField(max_length=128, blank=False)
-    model_id = models.CharField(max_length=128, blank=True) #A model number, id, or any other designation for this piece of equipment
+    # model_id is changed with model_number
+    is_delete = models.BooleanField(default=False)
+    model_number = models.CharField(max_length=128, blank=True) #A model number, id, or any other designation for this piece of equipment
     model_test_sheet = models.FileField(max_length=500, null=True, blank=True, upload_to = upload_model_te_path)
     mandatory_model_test_equipment =  models.ManyToManyField(TestEquipment, blank=True, related_name="mandatory_model_test_equipment")
     optional_model_test_equipment =  models.ManyToManyField(TestEquipment, blank=True, related_name="optional_model_test_equipment")
@@ -250,11 +309,21 @@ class Model(models.Model):
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="model_company")
     status = models.CharField(choices=STATUS_LIST, null=True, blank=True, max_length=16)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     objects = ModelManager()
+    @property
+    def type_name(self):
+        return self.model_type.name
+    @property
+    def manufacturer_name(self):
+        return self.model_manufacturer.name
+
     def __str__(self):
         return f"{self.name}"
 
 class ModelNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='model_notes')
     updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='modify_model_notes')
     note = models.TextField(null=True, blank=True)
@@ -264,6 +333,11 @@ class ModelNotes(models.Model):
     parent_note = models.ForeignKey('self', on_delete=models.CASCADE, related_name="sub_notes", null=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_model_note")
+
+    def save(self, *args, **kwargs):
+        if self.model:
+            Model.objects.filter(id=self.model.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
     @property
     def hierarchy_level(self):
@@ -296,11 +370,13 @@ def model_folder_path(instance, filename):
         return False
 
 class ModelFolder(models.Model):
+    is_delete = models.BooleanField(default=False)
     model_file=models.FileField(max_length=500, null=True, blank = True, upload_to = model_folder_path)
     file_url=models.URLField(max_length=500, null=True, blank=True)
     file_name = models.CharField(max_length=256, null=True, blank=True)
     model = models.ForeignKey(Model, null=True, on_delete=models.CASCADE, blank=True, related_name="model")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_model_file")
 
@@ -319,13 +395,21 @@ def model_testguide_path(instance, filename):
     except Job.MultipleObjectsReturned:
         return False
 class ModelTestGuide(models.Model):
+    is_delete = models.BooleanField(default=False)
     model_test_guide=models.FileField(max_length=1000, null=True, blank=True, upload_to = model_testguide_path)
     model=models.ForeignKey(Model, null=True, on_delete=models.CASCADE, blank=True, related_name="model_test")
     title = models.TextField(null = True, blank = True)
     definition = models.TextField(null = True, blank = True)
     created_at=models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_model_video")
+
+    def save(self, *args, **kwages):
+        if self.model:
+            Model.objects.filter(id=self.model.id).update(updated_at=timezone.now())
+        super().save(*args, **kwages)
+    
     def filename(self):
         return os.path.basename(self.model_test_guide.name)
 
@@ -370,11 +454,24 @@ def upload_nameplate_path(instance, filename):
 
 # class EquipmentFiles(models.Model):
 #     eq_file = models.FileField(max_length=500, null=True, blank = True, upload_to = upload_test_results_path)
+
 class Equipment(models.Model):
+    
+    def save(self, *args, **kwargs):
+        self.change_key += 1
+        # commented this out it was causing issues while adding new piece of equipment
+        # job = self.equipments.first()
+        # # Added a check for job either job exists or not
+        # if job:
+        #     job.save()
+        if self.job_site:
+            JobSite.objects.filter(id=self.job_site.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+    change_key = models.IntegerField(null=True, blank=True, default=0)
+    is_delete = models.BooleanField(default=False)
     equipment_type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name="type", null=True, blank=True)
     site_id = models.TextField(max_length=1000)
     job_site = models.ForeignKey('JobSite', on_delete=models.CASCADE, related_name="equipment_jobsite", null=True, blank=True)
-    selected_tab = models.IntegerField(null=True, blank=True, default=1)
     parent_equipment = models.ForeignKey('self', on_delete=models.CASCADE, related_name="sub_equipments", null=True, blank=True)
     manual = models.TextField(max_length=64, null = True, blank = True) # needs to link to them manual
     scope = models.TextField(default = 'refer to overall job scope (default)') #scope for this specific piece of equipment
@@ -393,7 +490,7 @@ class Equipment(models.Model):
 
     #define test equipment requirements.
     mandatory_test_equipment =  models.ManyToManyField(TestEquipment, blank=True, related_name="mandatory_test_equipment")
-    optional_test_equipment =  models.ManyToManyField(TestEquipment, blank=True, related_name="optional_test_equipment") #not used
+    optional_test_equipment =  models.ManyToManyField(TestEquipment, blank=True, related_name="optional_test_equipment")
     is_insulation_resistance=models.BooleanField(default=False)
     is_contact_resistance=models.BooleanField(default=False)
     is_trip_unit=models.BooleanField(default=False)
@@ -412,7 +509,8 @@ class Equipment(models.Model):
     is_ttr=models.BooleanField(default=False)
     is_xfmr_insulation_resistance=models.BooleanField(default=False)
     is_winding_resistance=models.BooleanField(default=False)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     objects = EquipmentManager()
 
     def __str__(self):
@@ -423,6 +521,13 @@ class Equipment(models.Model):
             return self.equipment_mold.site_id
         else:
             return self.site_id
+    @property
+    def classification(self):
+        man = self.equipment_model.model_manufacturer.name
+        mod = self.equipment_model.name
+        typ = self.equipment_model.model_type.name
+        return man+' '+mod+' '+typ
+
     @property
     def equipment_type_data(self):
         if self.equipment_mold:
@@ -559,7 +664,6 @@ class Equipment(models.Model):
     # @property
     # def is_addable(self):
     #     if self.
-
 def get_eq_level(eq, level=0):
     parent_eq = eq.parent_equipment
     if parent_eq:
@@ -612,7 +716,6 @@ def equipment_folder_path(instance, filename):
         return path
     except Job.MultipleObjectsReturned:
         return False
-
 class SupportRequest(models.Model):
     description = models.TextField(null=True, blank=True)
     details = models.TextField(null=True, blank=True)
@@ -639,30 +742,58 @@ class SupportSession(models.Model):
     meeting_link = models.CharField(max_length=1000, null=True, blank=True)
     
 
+
 class EquipmentFolder(models.Model):
+    is_delete = models.BooleanField(default=False)
     equipment_file=models.FileField(max_length=500, null=True, blank = True, upload_to = equipment_folder_path)
     file_name = models.CharField(max_length=256, null=True, blank=True)
     equipment = models.ForeignKey(Equipment, null=True, on_delete=models.CASCADE, blank=True, related_name="equipment")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='author_eq_file')
     def extension(self):
         name, extension = os.path.splitext(self.equipment_file.name)
         return extension
     def filename(self):
         return os.path.basename(self.equipment_file.name)
+    @property
+    def author_name(self):
+        user = self.author
+        if user:
+            return f'{user.first_name} {user.last_name}'
+        return 'Anonymous'
+
+    def save(self, *args, **kwargs):
+        if self.equipment:
+            Equipment.objects.filter(id=self.equipment.id).update(updated_at=timezone.now())
+        super().save(*args, *kwargs)
 
 class EquipmentLink(models.Model):
+    is_delete = models.BooleanField(default=False)
     link_name = models.CharField(max_length=256, null=True, blank=True)
     link_url=models.URLField(max_length=500, null=True, blank=True)
     equipment = models.ForeignKey(Equipment, null=True, on_delete=models.CASCADE, blank=True, related_name="equipment_link")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="company_eq_link")    
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='author_eq_link')
     @property
     def hostname(self):
         return urllib.parse.urlparse(self.link_url).hostname
+    @property
+    def author_name(self):
+        user = self.author
+        if user:
+            return f'{user.first_name} {user.last_name}'
+        return 'Anonymous'
+    
+    def save(self, *args, **kwargs):
+        if self.equipment:
+            Equipment.objects.filter(id=self.equipment.id).update(updated_at=timezone.now())
+        super().save(*args, *kwargs)
 
 class EquipmentNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='equipment_notes')
     updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='modify_equipment_notes')
     note = models.TextField(null=True, blank=True)
@@ -670,6 +801,15 @@ class EquipmentNotes(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     parent_note = models.ForeignKey('self', on_delete=models.CASCADE, related_name="sub_notes", null=True)
+
+    def save(self, *args, **kwargs):
+        if self.equipment:
+            Equipment.objects.filter(id=self.equipment.id).update(updated_at=timezone.now())
+        super().save(*args, *kwargs)
+    
+    @property
+    def truncated(self):
+        return (self.note[:26] + '..') if len(self.note) > 28 else (self.note+"\"")
 
     @property
     def hierarchy_level(self):
@@ -707,6 +847,7 @@ def calculate_ttr_error(tap, expected_ttr):
 
 
 class TestSheet(models.Model):
+    is_delete = models.BooleanField(default=False)
     eq_type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name="sheet_type", null=True, blank=True)
     eq_model = models.ForeignKey(Model, on_delete=models.CASCADE, related_name="sheet_model", null=True, blank=True)
     eq = models.OneToOneField(Equipment, on_delete=models.CASCADE, related_name="sheet_eq", null=True, blank=True)
@@ -1037,7 +1178,9 @@ class TestSheet(models.Model):
     tap_one_ratio=models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
     ttr_upper_tolerance=models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)
     ttr_lower_tolerance=models.DecimalField(max_digits=10, decimal_places=5, null=True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     #cable test properties
     # source_point = models.CharField(max_length=256, null=True, blank=True)
     # end_point = models.CharField(max_length=256, null=True, blank=True)
@@ -1415,7 +1558,10 @@ class TestSheet(models.Model):
     #Switchgear
     bus_contact_resistance_quantity = models.IntegerField(null=True, blank=True)
 
-
+    def save(self, *args, **kwargs):
+        if self.eq:
+            Equipment.objects.filter(id=self.eq.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
     # #properties inherited from equipment MOLD
     @property
     def equipment_voltage_data(self):
@@ -1888,6 +2034,7 @@ class TestSheet(models.Model):
             return self.cable_ending_termination_type 
 
 class CableTestData(models.Model):
+    is_delete = models.BooleanField(default=False)
     test_sheet = models.ForeignKey(TestSheet, on_delete=models.CASCADE, related_name="cable_test_data", null=True, blank=True)
     test_result_key = models.IntegerField(null=True, blank=True)
     time = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
@@ -1899,8 +2046,16 @@ class CableTestData(models.Model):
     phase_b_units=models.CharField(max_length=64, null=True, blank=True)
     phase_c_units=models.CharField(max_length=64, null=True, blank=True)
     notes =  models.CharField(max_length=256, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if self.test_sheet:
+            TestSheet.objects.filter(id=self.test_sheet.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 class BusContactTestData(models.Model):
+    is_delete = models.BooleanField(default=False)
     test_sheet = models.ForeignKey(TestSheet, on_delete=models.CASCADE, related_name="bus_test_data", null=True, blank=True)
     test_result_key = models.IntegerField(null=True, blank=True)
     starting_section = models.TextField(null=True, blank=True)
@@ -1912,11 +2067,18 @@ class BusContactTestData(models.Model):
     phase_b_units=models.CharField(max_length=64, null=True, blank=True)
     phase_c_units=models.CharField(max_length=64, null=True, blank=True)
     notes =  models.CharField(max_length=256, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if self.test_sheet:
+            TestSheet.objects.filter(id=self.test_sheet.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 #create a class for user properties that has a onetoone relationship with it's associated user.
 class UserProperties(models.Model):
     user=models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
-
+    is_delete = models.BooleanField(default=False)
     #company of user
     company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE, related_name="user_company")
     #define user types as booleans
@@ -1941,10 +2103,21 @@ class UserProperties(models.Model):
 
     help_username = models.CharField(max_length=64, null=True, blank=True)
 
+    #notification subscriptions
+    # is_all_notifications = models.BooleanField(default=False)
+    # job_notifications = models.ManyToManyField('Job', blank=True, related_name="job_notifications_user")
+    # equipment_notifications = models.ManyToManyField(Equipment, blank=True, related_name="equipment_notifications_user")
+
     #define fsr properties
     burn_rate = models.IntegerField(null=True, blank=True)
     skills = models.TextField(null=True, blank=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def email(self):
+        return self.user.email
 
     #define manager Properties
 
@@ -1962,13 +2135,44 @@ class UserProperties(models.Model):
     #     response = {self.user.first_name, self.pk}
     #     print(response)
     #     return response
+    
+    @property
+    def display_name(self):
+        if self.nickname:
+            return f"{self.nickname} ({self.user.first_name} {self.user.last_name})"
+        else:
+            return f"{self.user.first_name} {self.user.last_name}"
+
+#notification model definition
+
+# class Notification(models.Model):
+
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     verb = models.CharField(max_length=255)
+#     note = models.TextField(null=True, blank=True)
+
+#     timestamp = models.DateTimeField(auto_now_add=True)
+#     read = models.BooleanField(default=False)
+
+#     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+#     object_id = models.PositiveIntegerField()
+#     content_object = GenericForeignKey()
+
+#     def __str__(self):
+#         return f'{self.id} | {self.user.first_name} {self.user.last_name} | notification'
+
+#     @property
+#     def get_absolute_url(self):
+#         return reverse('notification:notification', args=[self.id])
+
+# class InternalEntries(models.Manager):
 
 # class InternalEntries(models.Manager):
 class JobSite(models.Model):
     name = models.CharField(max_length=128, null=True, blank=True)
     owner = models.CharField(max_length=128, null=True, blank=True)
     facility_manager = models.CharField(max_length=128, null=True, blank=True)
-    
+    is_delete = models.BooleanField(default=False)    
     address = models.CharField(max_length=300, null=True, blank=True)
     nav_link = models.URLField(max_length=300, null=True, blank=True)#google maps or maps link
     site_navigation = models.TextField(null=True, blank=True) # how to get around on site
@@ -2009,6 +2213,8 @@ class JobSite(models.Model):
     other_site_rules= models.TextField(null=True, blank=True)
     is_private = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="jobsite_company")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def get_jobs(self):
@@ -2043,25 +2249,38 @@ def jobsite_folder_path(instance, filename):
     except JobSite.MultipleObjectsReturned:
         return False
 
+
 class JobSiteFolder(models.Model):
+    is_delete = models.BooleanField(default=False)
     jobsite_file=models.FileField(max_length=500, null=True, blank = True, upload_to = jobsite_folder_path)
     file_name = models.CharField(max_length=256, null=True, blank=True)
     file_url=models.URLField(max_length=500, null=True, blank=True)
     jobsite = models.ForeignKey(JobSite, null=True, on_delete=models.CASCADE, blank=True, related_name="jobsite")
-    created_at = models.DateTimeField(auto_now_add=True)    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     @property
     def hostname(self):
         return urllib.parse.urlparse(self.file_url).hostname
     def filename(self):
         return os.path.basename(self.jobsite_file.name)
 
+    def save(self, *args, **kwargs):
+        if self.jobsite:        
+           JobSite.objects.filter(id=self.jobsite.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
+
 class JobSiteNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='site_notes')
     note = models.TextField(null=True, blank=True)
     jobsite = models.ForeignKey(JobSite, null=True, on_delete=models.CASCADE, blank=True, related_name="note_jobsite")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if self.jobsite:        
+           JobSite.objects.filter(id=self.jobsite.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
 
 
 class JobManager(models.Manager):
@@ -2081,6 +2300,7 @@ def maint_file_path(instance, filename):
 
 
 class Well(models.Model):
+    is_delete = models.BooleanField(default=False)
     name = models.CharField(max_length=256, null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     nav_link = models.URLField(max_length=300, null=True, blank=True)
@@ -2097,7 +2317,8 @@ class Well(models.Model):
 
     start_date = models.DateField(null=True, blank=True, max_length=80)
     man_date = models.DateField(null=True, blank=True, max_length=80)
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     @property
     def last_date(self):
         maints = self.maint_well.all()
@@ -2108,18 +2329,22 @@ class Well(models.Model):
             None
         
 class WellNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     note = models.TextField(null=True, blank=True)
     well = models.ForeignKey(Well, null=True, on_delete=models.CASCADE, blank=True, related_name="note_well")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class MaintEvent(models.Model):
+    is_delete = models.BooleanField(default=False)
     well = models.ForeignKey(Well, null=True, on_delete=models.CASCADE, blank=True, related_name="maint_well")    
     title = models.TextField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     oil_change_date = models.DateField(null=True, blank=True, max_length=80)
     hours = models.DecimalField(max_digits=15, decimal_places=5, null=True, blank=True)
     completed = models.IntegerField(null=True, blank=True)    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def date(self):
@@ -2130,21 +2355,33 @@ class MaintEvent(models.Model):
             None
 
 class MaintNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     note = models.TextField(null=True, blank=True)
     maint = models.ForeignKey(MaintEvent, null=True, on_delete=models.CASCADE, blank=True, related_name="note_maint")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class MaintFile(models.Model):
+    is_delete = models.BooleanField(default=False)
     maint_file=models.FileField(max_length=500, null=True, blank = True, upload_to = maint_file_path)
     file_name = models.CharField(max_length=256, null=True, blank=True)
     maint_event = models.ForeignKey(MaintEvent, null=True, on_delete=models.CASCADE, blank=True, related_name="maint_event_file")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def filename(self):
         return os.path.basename(self.maint_file.name)
 
-    
+
 class Job(models.Model):
+    
+    def save(self, *args, **kwargs):
+        self.change_key += 1        
+        print(self.change_key)
+        if self.job_site:
+            JobSite.objects.filter(id=self.job_site.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)  # Call the "real" save() method.
+    change_key = models.IntegerField(null=False, blank=False, default=0)
+    is_delete = models.BooleanField(default=False)
     company = models.ForeignKey(Company, null=True, on_delete=models.CASCADE, blank=True, related_name="job_company")
     job_number = models.CharField(max_length=64, null=True, blank=True)
     job_site = models.ForeignKey(JobSite, null=True, on_delete=models.CASCADE, blank=True, related_name="job_site")
@@ -2153,7 +2390,17 @@ class Job(models.Model):
     site_contact = models.CharField(max_length=64, null=True, blank=True)
     site_contact_info= models.TextField(null=True, blank=True)
     project_manager = models.CharField(max_length=64, null=True, blank=True)
-
+    job_type = models.CharField(max_length=20, blank=True, null=True)
+    # @property
+    # def job_type(self):
+    #     properties = UserProperties.objects.get(user=self.request.user)
+    #     jon_data = Job.objects.filter(archived=False, 
+	# 								  trashed=False, 
+	# 								  user_properties=properties,
+    #                           		  company=properties.company)\
+	# 								  .order_by('-start_date')
+    #     print("******",properties)
+    #     return
     #Define the Job Scope
     is_startup=models.BooleanField(default=False)
     is_preventative_maintenance=models.BooleanField(default=False)
@@ -2298,7 +2545,8 @@ class Job(models.Model):
 
     #users associated with job
     user_properties = models.ManyToManyField(UserProperties, blank=True, related_name="user_properties")
- 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     #job status
     trashed = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
@@ -2306,7 +2554,12 @@ class Job(models.Model):
     created_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name="jobs")
     objects = JobManager()
 
-    #create feedback strings for job details
+    @property
+    def created_by_name(self):
+        un = self.created_by.first_name +' '+ self.created_by.last_name
+        return un
+
+    #create feedback strings for job completion
     @property
     def test_equipments_name(self):
         """
@@ -2325,6 +2578,13 @@ class Job(models.Model):
             return "Incomplete"
 
     @property
+    def finished_count(self):
+        return self.equipment.filter(completion=True).count()
+    @property
+    def unfinished_count(self):
+        return self.equipment.filter(completion=False).count()
+
+    @property
     def get_eq_count(self):
         eq = self.equipment.filter(trashed=False).count()
         if eq<1:
@@ -2334,12 +2594,21 @@ class Job(models.Model):
         return self.equipment.filter(trashed = False)        
     @property
     def fsrs(self):
-        return [user for user in self.user_properties.all() if user.is_fsr and user.company == self.company] 
-    
+        return [user for user in self.user_properties.all() if user.is_fsr and user.company == self.company]
+    #property below, test_equipments, holds every unique type of test equipment recommended from all equipment belonging to the job.
+   
+    # @property
+    # def non_fsrs(self):
+    #     return UserProperties.objects.filter(company = self.company).exclude(user_properties = self)
     @property
     def non_fsrs(self):
-        return UserProperties.objects.filter(company = self.company).exclude(user_properties = self)
-        
+        users = UserProperties.objects.filter(company = self.company)
+        non_fsrs = []
+        for fsr in users:
+            if fsr not in self.user_properties.all():
+                non_fsrs.append(fsr)
+        return non_fsrs
+
     # @property
     # def active_crew(self):
     #     active_crew = []
@@ -2433,15 +2702,24 @@ def job_folder_path(instance, filename):
 
 
 class JobFolder(models.Model):
+    is_delete = models.BooleanField(default=False)
     job_file=models.FileField(max_length=500, null=True, blank = True, upload_to = job_folder_path)
     file_name = models.CharField(max_length=256, null=True, blank=True)
     job = models.ForeignKey(Job, null=True, on_delete=models.CASCADE, blank=True, related_name="job")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def filename(self):
         return os.path.basename(self.job_file.name)
+    
+    def save(self, *args, **kwargs):
+        if self.job:
+            Job.objects.filter(id=self.job.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
+
 
 
 class JobNotes(models.Model):
+    is_delete = models.BooleanField(default=False)
     author = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='job_notes')
     updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='modify_job_notes')
     note = models.TextField(null=True, blank=True)
@@ -2449,6 +2727,15 @@ class JobNotes(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     parent_note = models.ForeignKey('self', on_delete=models.CASCADE, related_name="sub_notes", null=True)
+
+    def save(self, *args, **kwargs):
+        if self.job:
+            Job.objects.filter(id=self.job.id).update(updated_at=timezone.now())
+        super().save(*args, **kwargs)
+
+    @property
+    def truncated(self):
+        return (self.note[:30] + '..') if len(self.note) > 32 else (self.note+"\"")
 
     @property
     def hierarchy_level(self):
@@ -2498,18 +2785,22 @@ def feedback_file_path(instance, filename):
 
 
 class FeedbackFile(models.Model):
+    is_delete = models.BooleanField(default=False)
     feedback_file=models.FileField(max_length=500, null=True, blank = True, upload_to = feedback_file_path)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def filename(self):
         return os.path.basename(self.feedback_file.name)
 
 
 class FeedbackNote(models.Model):
+    is_delete = models.BooleanField(default=False)
     note = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class WorkingNote(models.Model):
+    is_delete = models.BooleanField(default=False)
     note = models.TextField(null=True, blank=True)
 
 

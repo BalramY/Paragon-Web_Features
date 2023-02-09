@@ -203,10 +203,8 @@ h5{
   color: #023b59;
   text-align: center;
 }
-.modal{
-  max-height: 80%;
-  width: 70%;
-  border-radius: 5px;
+caption{
+  background-color: #f5f6f7;
 }
 </style>
 <div class="container" id="job_preloader">
@@ -320,7 +318,7 @@ h5{
       <tr>
         <td class="phone-font-med" style="width: 184px; font-weight: 500;">Job Site</td>
         <td>
-          <div class="col s12">{{job.job_site}}</div><a href="#" class="col s1" id="text_edit_jobsite" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped"  data-position="right" data-tooltip="edit">edit</i></a>
+          <div class="col s12">{{job.job_site}}</div>
           <input class="editable-field"
                  id="text_input_jobsite"
                  name="text_input_jobsite"
@@ -350,7 +348,6 @@ h5{
         <td class="phone-font-med" style="font-weight: 500;">Work Schedule</td>
         <td>
           <div class="col s12">{{job.work_schedule}}</div> 
-{#              <a href="#" id="text_edit_workschedule" class="col s1" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>#}
           <textarea
                   class="materialize-textarea editable-field job_edit"
                   id="work_schedule_i"
@@ -376,16 +373,6 @@ h5{
             <a href="{{job.job_site.nav_link}}" target="_blank" class="waves-effect waves-light btn-small computer-screen" style="float: right;" {% if not job.job_site.nav_link %} disabled {% endif %} >Open Navigation</a>
             <a href="{{job.job_site.nav_link}}" target="_blank" class="waves-effect waves-light btn-small phone-button phone-screen" style="float: right;" {% if not job.job_site.nav_link %} disabled {% endif %} >Navigate</a>
             </div>
-          <a href="#" class="col s1" id="text_edit_address" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-{#              <textarea       #}
-{#                      class="materialize-textarea editable-field job_edit"#}
-{#                      id="address"#}
-{#                      name="address"#}
-{#                      form="job_edit"#}
-{#                      autocomplete="off"#}
-{#                      placeholder="Enter Site Address"#}
-{#                      hidden#}
-{#              >{{ job.job_site.address }}</textarea>#}
         </td>
       </tr>
 
@@ -483,7 +470,7 @@ h5{
     </table>
         <div class="col s12 m12 l4"
         style="padding: 0">
-          <h4 class="comp-spacer" style="border-bottom: 1px solid #aaa; background-color: white; text-align: center; position: sticky; top: 0; z-index: 98;">Crew</h4>
+          <h4 class="comp-spacer" style="border-bottom: 1px solid #aaa; text-align: center; position: sticky; top: 0; z-index: 98;">Crew</h4>
           {% if non_fsrs %}
       
           <form style="padding-top: 10px; padding-right: 10px;
@@ -591,15 +578,13 @@ h5{
         </a></li>
         </ul>
 
+       
+       
+
         <a class='dropdown-trigger dropdown-auto btn-small phone-font-lrg phone-button phone-btn-spacer secondary-act z-depth-0' href='#' data-target='equip_actions'> Options <i class="material-icons right">menu</i> </a>
         <a class="dropdown-trigger dropdown-auto waves-effect waves-light btn-small phone-button phone-btn-spacer" style="display: none;" href="#" data-target="add_eq_dropdown">Equipment Assembly</a>
-        <!-- <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >Quick Add</a> -->
-        <a class="waves-effect waves-light modal-trigger phone-button btn-small phone-btn-spacer" id="add_eq_button" href="#modal1">Quick Add</a>
-        <div id="modal1" class="modal">
-          <div class="modal-content">
-            {% include './new_add_equipment.html' %}
-          </div>
-        </div>
+        <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >Quick Add</a>
+
         <span id="eq_assembly_help" class="help-btn hover-item"><i class="material-icons-outlined inline-icon">info</i></span>
         <ul id="add_eq_dropdown" class="dropdown-content">
         </ul>
@@ -657,11 +642,12 @@ h5{
 
 
     <div id="site" style="padding: 0;" class="col s12 hidencontent">
-      <div class="">
-      <a class="" href="{% url 'job_site' job.job_site.id %}" target="_blank">Open Job Site</a>
-      <span id="job_site_link_help" class=" help-btn hover-item"><i class="material-icons-outlined inline-icon">info</i></span>
-    </div>
       <div class="row">
+        <div class="col s12">
+
+        <a class="" href="{% url 'job_site' job.job_site.id %}" target="_blank">Open Job Site</a>
+        <span id="job_site_link_help" class=" help-btn hover-item"><i class="material-icons-outlined inline-icon">info</i></span>
+      </div>
         <div class="col s12 m12 l12 xl5 mobile-container">
           <table class="highlight">
             <caption class="phone-font-ml computer-font-lrg" style="padding-top: 1.5rem;" >General</caption>
@@ -900,12 +886,12 @@ h5{
             </tr>
 
             <tr>
-              <td class="phone-font-med" style="font-weight: 500;">Standard Handtools</td>
+              <td class="phone-font-med" style="font-weight: 500;">Basic Handtools</td>
               <td class="phone-font-med">
                 <div class="col s12">{% if job.is_standard_handtools %}
-                <b>Yes,</b> standard handtools are required.
+                <b>Yes,</b> basic handtools are required.
                 {% else %}
-                <b>No,</b> standard handtools are not required.
+                <b>No,</b> basic handtools are not required.
                 {% endif %}</div>
                 <a class="col s1" href="#" id="text_edit_handtools" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
                 <div id="is_standard_handtools" hidden class="job_edit editable-field">
@@ -1379,12 +1365,6 @@ h5{
         </div>
       </div>
       
-        
-       
-
-
-
-
     </div>
 
     <div id="job_scope" class="mobile-container col s12 hidencontent">
@@ -2698,7 +2678,7 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
     // modal_inst.open();
 
   $("#job_site_link_help").click(function(){
-    helpFunction('Editing Job Site Properties','These properties are applicable to the job site as a whole and are displayed in each job belonging to that job site. You have to open the job site to edit these. Note that any changes will propogate to all jobs with this Job Site.')
+    helpFunction('Editing Job Site Properties','These properties are applicable to the job site as a whole and are displayed in each job belonging to that job site. You have to open the job site to edit these. Note that any changes will propagate to all jobs with this Job Site.')
   })
   $("#job_edit_mode_help").click(function(){
     helpFunction('Editing Jobs','This will display all hidden properties and allow you to make changes. Once finished, just save your changes to apply. ')
