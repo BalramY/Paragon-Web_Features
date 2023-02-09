@@ -18,6 +18,17 @@ Equip | {{equipment.site_id}}
 
 {% block body %}
 <style>
+  .tabs .tab a:focus, .tabs .tab a:focus.active {
+    background-color: white;
+    outline: none;
+  /* animation-name: example;
+  animation-duration: .7s;
+  animation-timing-function: ease-in; */
+}
+@keyframes example {
+  0%   {background-color: #eee;}
+  100% {background-color: white;}
+}
   .nav_corner{
     position: relative;
     top: -25px;
@@ -704,23 +715,8 @@ input[type=number] {
 .tr-body-style input[type=text], input[type=number], select{
   font-weight: 400;
 } 
-.tab:hover{  
-  background-color: #f6f6f6;
-}
 .tab > a:hover{  
   text-decoration: none !important;
-}
-.tab{
-    width: 280px;
-}
-.scrolltabs{
-    display: flex;
-    justify-content: space-between;
-}
-@media screen and (max-width:576px){
-    .scrolltabs{
-    overflow-x: scroll;
-}
 }
 </style>
 
@@ -768,52 +764,21 @@ input[type=number] {
 
 <div class="fixed-action-btn" id="edit_submit_div" hidden>
        <button id="edit_submit" class="btn-large tooltipped pulse phone-font-ml" data-position="left" data-tooltip="Must Commit Changes to Take Effect"
-       style="text-align: center; color: white; font-weight: 400; "type="submit" name="action" form="eq_edit" onclick="stopLeave=false ;onSubmit()">Commit Changes</button>
+       style="text-align: center; font-weight: 400; "type="submit" name="action" form="eq_edit" onclick="stopLeave=false ;onSubmit()">Commit Changes</button>
 </div>
       
 <form id="eq_edit" action="{% url 'edit_equipment' equipment.id %}" method="post">{% csrf_token %}</form>
 <div class="row">
 <div class="container disabled-button">
 </div>
-<div class="main-container" style="position: -webkit-sticky; position: sticky;  background-color: rgba(255,255,255, 0.94); z-index: 99 !important;  top: 0;">
-    <h4 id='main_header' style="padding:0 5px 10px 15px">      
-      {% if job %}
-          <a class="waves-effect waves-light left btn-small phone-button lapping-btn" href="{% url 'job' job.id %}#equipment">
-            ◀ <span onclick="goBack()" class="computer-screen">Go Back</span> 
-          </a>
-      {% elif job_site %}
-      <!-- <a class="waves-effect waves-light btn-small lapping-btn phone-button" onclick="goBack()">Go Back</a>
-          <a class="waves-effect waves-light left btn-small phone-button lapping-btn" href="{% url 'job_site' job_site.id %}#equipment">
-            ◀ {{ job_site.name }}
-          </a> -->
-          <a class="waves-effect waves-light btn-small lapping-btn phone-button" onclick="goBack()">Go Back</a>
-
-      {% endif %}
-        <span
-                class="phone-font-ml"
-                style="text-align: center;color:#01579b; padding-top: 0; padding-bottom: 0;"
-        >
-           <!--  <span class="phone-font-med comp-font-med" style="color: #888; font-weight: 500;">
-                {% if job %}
-                    On Job: {{job.job_name}}
-                {% elif job_site %}
-                    On Job Site: {{ job_site.name }}
-                {% endif %}
-            </span> -->
-            <br>
-             {{equipment.site_id}} 
-          </span>
-    </h4>
-</div>
-
 <div class="row main-container">
   <div class="col s12">
-    <ul class="tabs tabs1 scrolltabs" id="#tabs1">
-      <li class="tab noselect"><a href="#description">Description</a></li>
-      <li class="tab noselect"><a href="#testreport">Test Report</a></li>
-      <li class="tab noselect"><a href="#notes_files">Notes/Files</a></li>
-      <li class="tab noselect"><a href="#resources">Resources</a></li>
-      <li class="tab noselect"><a href="#internal_support">Support</a></li>
+    <ul class="tabs tabs1" id="#tabs1">
+      <li class="tab col s2 noselect hoverable"><a href="#description">Description</a></li>
+      <li class="tab col s3 noselect hoverable"><a href="#testreport">Test Report</a></li>
+      <li class="tab col s3 noselect hoverable"><a href="#notes_files">Notes/Files</a></li>
+      <li class="tab col s2 noselect hoverable"><a href="#resources">Resources</a></li>
+      <li class="tab col s2 noselect hoverable"><a href="#internal_support">Support</a></li>
     </ul>
   </div>
   <div id="description" class="col s12">
@@ -1059,7 +1024,7 @@ input[type=number] {
           
           {% if job %}
           <tr>
-            <td class="phone-font-med" style="width: 200px; font-weight: 500;">Status:</td>
+            <td class="phone-font-med" style="width: 200px; font-weight: 500;">Status</td>
             <td class="phone-font-med">
                  {% if equipment.completion %}
                      Completed
@@ -1087,6 +1052,18 @@ input[type=number] {
                       <span>Yes</span>
                   </label>
                 </div>
+             </td>
+          </tr>
+          <tr>
+            <td class="phone-font-med" style="width: 200px; font-weight: 500;">Added</td>
+            <td class="phone-font-med">
+                {{equipment.created_at}}
+             </td>
+          </tr>
+          <tr>
+            <td class="phone-font-med" style="width: 200px; font-weight: 500;">Updated</td>
+            <td class="phone-font-med">
+                {{equipment.updated_at}}
              </td>
           </tr>
           <tr>
@@ -2128,54 +2105,6 @@ input[type=number] {
         </div>
       </form>
           </div>
-          <h5 class="blue-heading " id="eq_files_row" style="padding: 2.5rem;">Equipment Links</h5>
-          <div class="container">
-            
-          {% if equipment_links %}
-            <ul class="collection last-child-border" style="border: none;">
-              {% for link in equipment_links %}
-              <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
-                <a href="{{link.link_url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
-                  <i class="material-icons left phone-font-med">link</i>
-                  {% if link.link_name %}
-                  {{link.link_name}}
-                  {% else %}
-                  {{link.link_url}}
-                  {% endif %}
-                </a>                                        
-                {%  if request.user.is_superuser or request.user == link.author %}
-                <a onclick="return confirm('Permanently remove?')" href="#"><i style="color: #D0C0C0;border: 1px solid #ddd;" class="material-icons right phone-font-lrg">delete</i></a>
-                {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-              <h6 style="color: #888; text-align: center;">No Links</h6>
-          {% endif %}
-      <form id="link_add_form" action="{% url 'add_equipment_links' equipment.id %}" method="post"
-        enctype="multipart/form-data" style="padding-left: 1rem; padding-right:1rem;">
-        {% csrf_token %}
-        <div class="row">
-          <div class="col s12 m12 l6 xl4">
-            <div class="input-field col s12 " id="link_url_div">
-              <input placeholder="paste entire URL" id="link_url" name="link_url" type="url">
-              <label for="link_url">URL</label>
-            </div>
-          </div>
-          <div class="col s12 m12 l6 xl4">
-            <div class="input-field">
-              <input placeholder="optionally name the link" style="max-width: 300px;" form="link_add_form" class="phone-font-ml text-input " id="eq_link_name" name="eq_link_name" type="text">
-            </div>
-          </div>
-          <div class="col s12 m12 l6 xl4">          
-            <button class="btn waves-effect waves-light right phone-button" style="margin-top: 5px;" type="submit" name="action"
-              form="link_add_form" id="submit-btn-link"> Add Link
-              <i class="material-icons right">send</i>
-            </button>
-          </div>
-        </div>
-      </form>
-          </div>
       {%else%}
         <h5 class="blue-heading " style="padding-bottom: 1rem;" id="add_note_heading">Records</h5>
 
@@ -2184,210 +2113,12 @@ input[type=number] {
   </div>
   <div id="resources" class="col s12">
     <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
-        <li class="tab noselect"><a href="#model_equipment">Model</a></li>
-        <li class="tab noselect"><a href="#type_equipment">Type</a></li>
+        <li class="tab col s6 noselect"><a href="#model_equipment">Model</a></li>
+        <li class="tab col s6 noselect"><a href="#type_equipment">Type</a></li>
     </ul>
+    
+
     <div id="model_equipment" class="col s12">
-        <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
-            <li class="tab noselect"><a href="#model_files">Model Files/Links</a></li>
-            <li class="tab noselect"><a href="#model_manufacture">Manufacture Support</a></li>
-            <li class="tab noselect"><a href="#model_videos">Videos</a></li>
-            <li class="tab noselect"><a href="#model_notes">Model Notes</a></li>
-        </ul>
-    </div>
-    <div id="type_equipment" class="col s12">
-        <ul class="tabs tabs1" style="display: flex; justify-content: space-around; margin-top: 20px;" id="#tabs1">
-            <li class="tab noselect"><a href="#test_standards">Test Standards</a></li>
-            <li class="tab noselect"><a href="#type_files">Type Files/Links</a></li>
-            <li class="tab noselect"><a href="#type_videos">Videos</a></li>
-            <li class="tab noselect"><a href="#type_notes">Type Notes</a></li>
-        </ul>
-    </div>
-
-    <div id="model_files" class="col s12">
-        <div class=" phone-font-med" id="model_0">
-            {% csrf_token %}
-            {% if model_files %}
-            <ul class="collection last-child-border" style="border: none;">
-            {% for file in model_files %}
-            
-            <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
-                {% if file.model_file %}
-                <a href="{{file.model_file.url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;"  >
-                <i class="material-icons left phone-font-med">insert_drive_file</i>
-                {% if file.file_name %}
-                    {{file.file_name}}
-                {% else %}
-                    {{file.filename}}
-                {% endif %}
-                </a>
-                {% endif %}
-                {% if file.file_url %}
-                <a href="{{file.file_url}}" target="_blank" class=" phone-font-med"  style="word-wrap: break-word; padding: 0;">
-                    <i class="material-icons left phone-font-med">link</i>
-                    {% if file.file_name %}
-                    {{file.file_name}}
-                    {% else %}
-                    {{file.hostname}}
-                    {% endif %}
-                </a>
-                {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-                <h6>No Files</h6>
-            {% endif %}
-        </div>
-    </div>
-    <div id="model_manufacture" class="col s12">
-        <div class=" phone-font-med" id="model_1" style="word-wrap:break-word;">
-            {% if equipment.equipment_model.model_manufacturer.customer_support %}
-            <span class="subtle-u">{{equipment.equipment_model.model_manufacturer}} General Support</span><br>
-            <span style=" white-space: pre-wrap;">{{equipment.equipment_model.model_manufacturer.customer_support}}</span><br><br>
-            {% endif %}
-            {% if equipment.equipment_model.model_customer_support %}
-            <span class="subtle-u">{{equipment.equipment_model}} Support</span><br><span style=" white-space: pre-wrap;">{{equipment.equipment_model.model_customer_support}}</span>
-            {% endif %}
-        </div>
-    </div>
-    <div id="model_videos" class="col s12">
-        <div class="" id="model_2" style="overflow: hidden;">
-          {% if model_guides %}
-            {% for guide in model_guides %}
-              <h6 style="color: black;">{{guide.title}}</h6>
-              <video controls="controls" controlsList=”nodownload” width="98%" height="auto" preload="metadata">
-                <source src="{{guide.model_test_guide.url}}" type="video/mp4"></video>
-            {% endfor %}
-          {% else %} <span class="phone-font-med"> None <a href="{% url 'eq_model' equipment.equipment_model.id %}"><i>Add video to this model</i></a></span>
-          {% endif %}
-        </div>
-    </div>
-    <div id="model_notes"  class="col s12">
-        <div class="phone-font-sml" id="model_3" > 
-          <div class="container">
-            <div class="row">
-              <div class="search-div" id="model_note-container" style="margin-left: 52px; float: right; position: -webkit-sticky; position: sticky;">
-                <input class="orange-underline search-input" id="search_model_note" type="text" placeholder="Search..."/>
-                  <div class="noselect phone-font-med" id="model_note-move-text" style="display: none; color: #888">
-                    <span id="model_note-matched-text"></span>
-                    <div style="float: right">
-                      <span class="phone-font-xl hover-item search-arrows comp-font-ml " onclick="previousSearchNote('model_note'); " id="model_note-previous-text" >▲
-                      </span>
-                      <span class=" phone-font-xl hover-item search-arrows comp-font-ml  " onclick="nextSearchNote('model_note') " id="model_note-next-text">▼
-                      </span>
-                    </div>  
-                  </div>
-                </div>
-                <button id="search_model_note_button" onclick="searchNote('model_note', 'model_note_child_toggle', 'model_note-content');$('#model_note-container').parent().addClass('sticky-top'); headerLeft()" hidden>Search</button>
-              </div>
-            {% for note in model_notes %}
-              {% include "jobs/job_note_data_new.html" with note=note note_type='model_note' %}
-            {% empty %}
-            No model notes have been added.
-            {% endfor %}
-          </div>
-        </div>
-    </div>
-
-    <div id="test_standards" class="col s12">
-            <div class="phone-font-med" style="overflow-x:auto;" id="type_0">
-              {% if type_ts %}
-              <table class="highlight">
-                <tr>
-                  <th>Name</th>
-                  <th>Standard</th>
-                  <th class="computer-screen">Description</th>
-                </tr>
-              {% for ts in type_ts %}
-                <tr>
-                  <td>
-                    {% if ts.ts_url %}<a href="{{ts.ts_url}}"  target="_blank" ><i class="material-icons phone-font-ml left">link</i>{{ts.ts_name|default_if_none:'unnamed'}}</a>{% endif %}
-                    {% if ts.ts_file %}<a href="{{ts.ts_file.url}}"  target="_blank" ><i class="material-icons phone-font-ml left">insert_drive_file</i>{{ts.ts_name|default_if_none:'unnamed'}}</a>{% endif %}                        
-                  </td>
-                  <td style="text-align: center;">{% if ts.ts_standard %}{{ts.ts_standard}}{% else %} <span style="color: #aaa;">Undefined</span>  {% endif %}</td>
-                  <td class="computer-screen">{{ts.ts_description}}</td>
-                </tr>
-              {% endfor %}
-          </table>
-              {% else %}No testing standards have been added
-              {% endif %}
-            </div>
-    </div>
-    <div id="type_files" class="col s12">
-            <div class="phone-font-sml" id="type_1" style="overflow: hidden;">
-              {% csrf_token %}
-              {% if type_files %}
-                <ul class="collection last-child-border">
-                  {% for file in type_files %}
-                  <li class="collection-item phone-expansion" style="padding-top: 10px !important; padding-bottom: 10px !important; border-bottom: 1px solid #00000012; background: transparent;">
-                    {% if file.type_file %}
-                    <a href="{{file.type_file.url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
-                       <i class="material-icons left phone-font-med">insert_drive_file</i>
-                      {% if file.file_name %}
-                      {{file.file_name}}
-                      {% else %}
-                      {{file.filename}}
-                      {% endif %}
-                    </a>
-                    {% endif %}
-                    {% if file.file_url %}
-                    <a href="{{file.file_url}}" target="_blank" class="phone-font-med" style="word-wrap: break-word; padding: 0;">
-                    <i class="material-icons left phone-font-med">link</i>
-                        {% if file.file_name %}
-                        {{file.file_name}}
-                        {% else %}
-                        {{file.hostname}}
-                        {% endif %}      
-                      </a>
-                    {% endif %}
-                  </li>
-                  {% endfor %}
-                </ul>
-              {% else %}
-                  <h6>No Files</h6>
-              {% endif %}
-            </div>
-    </div>
-    <div id="type_videos" class="col s12">
-            <div id="type_2" style="overflow: hidden;"> 
-              {% if type_guides %}
-                {% for guide in type_guides %}
-                  <h6 style="color: black;">{{guide.title}}</h6>
-                  <video controls="controls" controlsList=”nodownload” width="98%" height="auto" preload="metadata">
-                    <source src="{{guide.type_test_guide.url}}" type="video/mp4"></video>
-                {% endfor %}
-              {% else %} <span class="phone-font-med"> None. <a href="{% url 'eq_type' equipment.equipment_type.id %}"><i>Add video to this type</i></a></span>
-              {% endif %}
-            </div>
-    </div>
-    <div id="type_notes" class="col s12">
-        <div class="phone-button-sml" id="type_3"> 
-            <div class="container">
-            <div class="row">
-                <div class="search-div" id="type_note-container" style="margin-left: 52px; float: right; position: -webkit-sticky; position: sticky;">
-                <input class="orange-underline search-input" id="search_type_note" type="text" placeholder="Search..."/>
-                    <div class="noselect phone-font-med" id="type_note-move-text" style="display: none; color: #888">
-                    <span id="type_note-matched-text"></span>
-                    <div style="float: right">
-                        <span class="phone-font-xl hover-item search-arrows comp-font-ml " onclick="previousSearchNote('type_note')" id="type_note-previous-text" >▲
-                        </span>
-                        <span class=" phone-font-xl hover-item search-arrows comp-font-ml  " onclick="nextSearchNote('type_note')" id="type_note-next-text">▼
-                        </span>
-                    </div>  
-                    </div>
-                </div>
-                <button id="search_type_note_button" onclick="searchNote('type_note', 'type_note_child_toggle', 'type_note-content');$('#type_note-container').parent().addClass('sticky-top'); headerLeft()" hidden>Search</button>
-                </div>
-                {% for note in type_notes %}
-                {% include "jobs/job_note_data_new.html" with note=note note_type='type_note' %}
-                {% empty %}
-                No type notes have been added.
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <!-- <div id="model_equipment" class="col s12">
       {% if equipment.equipment_model %}
       <div class="card white z-depth-0" >
         <div class="card-content">
@@ -2676,8 +2407,8 @@ input[type=number] {
       {% else %}
       <h6>No type is associated with this piece of equipment.</h6>
       {% endif %}
-    </div>     -->
-  <!-- </div> -->
+    </div>    
+  </div>
   <div id="internal_support" class="col s12" style="padding-top:20px">
     <div class="row">
       <div class="col s12">
@@ -2718,11 +2449,10 @@ input[type=number] {
           </form>    
         </div>
       </div>
-      <div class="col s12 m12 l12 xl6">
+      <div class="col s12 m12 l12 xl12">
         {% if request.user.requester_request %}
         <h5 style="text-align: center">Issues</h5>
-          {% for support_request in request.user.requester_request.all|dictsortreversed:"pk" %}
-          {{support_request.request_session}}
+          {% for support_request in request.user.requester_request.all|dictsortreversed:"updated_at" %}
           <div>
             <div class="card white">
               <div class="card-content card-padder" >
@@ -2731,7 +2461,7 @@ input[type=number] {
                   
                   <div class="col s12 m12 l12 xl3">
                     <div class="switch green-switch right" id="resolved-switch-{{support_request.id}}" {% if support_request.request_session.is_declined %}style="display: none"{% endif %}>
-                      <label  style="white-space: nowrap;color: #039be5">
+                      <label  style="white-space: nowrap;">
                         <input type="checkbox" class="blue" onchange="resolvedToggle('{{support_request.id}}', this)" {% if support_request.is_resolved %}checked="checked"{% endif %}  id="resolved_input_{{support_request.id}}" name="resolved_input_{{support_request.id}}">
                         <span class="lever"></span>
                         Resolved
@@ -2739,36 +2469,59 @@ input[type=number] {
                     </div>   
                   </div>
                 </div>
+                <p style="color: #666" class="phone-font-sml">Details: 
                 {% if support_request.details %}
-                <p style="color: #666" class="phone-font-sml">Additional Details: {{ support_request.details }}</p>
+                {{ support_request.details }} <br>
                 {% endif %}
+                <span style="color: #aaa">Created {{support_request.created_at}}</span> 
+              </p>
                 {% if support_request.request_session.exists %}
-                <ul class="collapsible z-depth-0 collapsible_support{{support_user.id}}">
-                    {% for session in support_request.request_session.all %}
-
-                      {% if session.request.is_active %}
-                      <li>
-                        <div class="collapsible-header"><i class="material-icons">filter_drama</i>Session {{session.id}}:{{session.request}}</div>
-                        <div class="collapsible-body">
-                          {% if session.offer_session.meeting_link %}
-                          body : <a href="{{session.offer_session.meeting_link}}" target="_blank">Meet Link</a> 
+                <table class="highlight noselect">
+                  <thead>
+                  <tr>
+                    <th>Specialist</th>
+                    <th>Details</th>
+                    <th style="width: 200px;">Link</th>
+                  </tr>
+                </thead>
+                  {% for session in support_request.request_session.all %}
+                      <tr>
+                        <td>
+                          {{session.supporter.first_name}} {{session.supporter.last_name}}
+                        </td>
+                        <td>
+                          {% if session.is_declined %}<span style="color: #d97b6f;">Declined</span> <br>{% endif %}
+                          {% if session.offer_session.is_accepted %}
+                          <span style="color: #5dc178;">Accepted</span> <br>                          
+                          {% else %}
+                          <span style="color: #b8a814;">Pending</span> <br>
                           {% endif %}
-                        </div>
-                      </li>
-                      {% endif %}
-                    {% endfor %}
-                    <script>
-                        $('.collapsible_support{{support_user.id}}').collapsible();
-                    </script>
-                </ul>
+                          
+                          <span class="phone-font-sml " style="color: #aaa">
+                            Requested: {{session.created_at}}
+                          </span>
+                          
+                        </td>
+                        <td>
+                          {% if not session.is_declined %}
+                            {% if session.offer_session.is_accepted %}
+                            <a href="{{session.offer_session.meeting_link}}" target="_blank"><i class="material-icons-outlined" >videocam</i> Meet</a>      
+                            <a class="right quick-link" onclick='copyMeetLink("{{session.offer_session.meeting_link}}")'><i class="material-icons-outlined " >copy</i></a>
+                            
+                            {% endif %}     
+                          {% endif %}
+                        </td>
+                      </tr>
+                  {% endfor %}
+                </table>
                 {% endif %}
               </div>
               <div class="card-action">
-                <a class="phone-font-med modal-trigger" style="color: #039be5;" href="#session_modal" onclick="onSessionModal({{ support_request.id}})">Request Session-</a>
+                <a class="phone-font-med modal-trigger" style="color: #039be5;" href="#session_modal" onclick="onSessionModal({{ support_request.id}})">+ Requests</a>
                   <a class="phone-font-med" style="color: #039be5;" href="mailto: {{ support_user.user.email }}">{{ support_user.user.email }} | {{ support_request.id}} || Email</a>
                   {% for session in support_request.request_session.all %}
                     <span>{% if session.is_declined %}<span style="color: red;"> Declined</span> {% endif %}
-                      {% if session.offer_session.is_active %}<span style="color: #039be5;">Accepted</span> {% endif %}
+                      {% if session.offer_session.is_accepted %}<span style="color: #039be5;">Accepted</span> {% endif %}
                     </span>
                   {% endfor %}
                 </div>
@@ -2858,10 +2611,13 @@ input[type=number] {
 </ul>
 <div style="position: fixed; bottom: 0; left: 0; background-color: white; z-index: 10001;" id="checker5"></div>
 </div>
-<input type="number" id="selected_request">
+<input type="number" id="selected_request" hidden>
 <form action="/create_post/" method="POST" id="post-form">
 <script>
-    
+function copyMeetLink(link){
+  navigator.clipboard.writeText(link);
+  M.toast({ html: 'Copied' })
+}
   function onRequestSubmit() {
     var mandatoryInstance = M.Chips.getInstance($("#m_test_equipment-chips"));
     var mandatoryValue = Array.from(mandatoryInstance.chipsData.map(x => x.tag)).join(",");
