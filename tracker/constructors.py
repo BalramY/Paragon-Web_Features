@@ -6687,12 +6687,8 @@ def toggle_scope_item(request):
         return render(request, "jobs/login.html", {"message": None})
     job_obj = Job.objects.filter(id=request.POST.get("job_id")).first()
     description = request.POST.get("description")
-    if request.POST.get("is_complete", False):
-        is_complete = True
-    else:
-        is_complete = False
     ScopeItem.objects.create(job=job_obj, description=description,
-                             is_complete=is_complete, created_by=request.user)
+                             created_by=request.user)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 def toggle_scope_task(request):
@@ -6707,4 +6703,29 @@ def toggle_scope_task(request):
         is_complete = False
     ScopeTask.objects.create(task_item=scope_obj, task_title=description,
                              is_complete=is_complete, created_by=request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def toggle_safety_sheet(request, job_id):
+    if not request.user.is_authenticated:
+        return render(request, "jobs/login.html", {"message": None})
+    job_obj = Job.objects.filter(id=job_id).first()
+    SafetySheet.objects.create(job=job_obj, created_by=request.user)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def toggle_safety_hazard(request):
+    if not request.user.is_authenticated:
+        return render(request, "jobs/login.html", {"message": None})
+    sheet_id = request.POST.get('sheet_id')
+    sheet_obj = SafetySheet.objects.filter(id=sheet_id).first()
+    hazard = request.POST.get('hazard')
+    danger_level = request.POST.get('danger_level')
+    probability = request.POST.get('probability')
+    scope_items = request.POST.getlist('scope_items')
+    scope_items = [ScopeItem.objects.get(id=int(sid)) for sid in scope_items]
+    hazard_obj = SafetyHazard.objects.create(safety_sheet=sheet_obj,
+                                hazard=hazard,
+                                danger_level=danger_level,
+                                probability=probability,
+                                created_by=request.user)
+    hazard_obj.scope_item.set(scope_items)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

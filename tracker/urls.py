@@ -186,5 +186,7 @@ urlpatterns = [
     path("add_maint_file/<int:maint_id>", constructors.add_maint_file, name="add_maint_file"),
 
     path("add_scope_item", constructors.toggle_scope_item, name="scope-item"),
-    path("add_scope_task", constructors.toggle_scope_task, name="scope-task")
+    path("add_scope_task", constructors.toggle_scope_task, name="scope-task"),
+    path("add_to_safety_sheet/<int:job_id>", constructors.toggle_safety_sheet, name="add-safety-sheet"),
+    path("add_safety_hazard", constructors.toggle_safety_hazard, name="add-safety-hazard"),
 ]
