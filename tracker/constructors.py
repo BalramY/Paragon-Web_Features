@@ -612,226 +612,226 @@ def edit_jobsite(request, jobsite_id):
     return HttpResponseRedirect(reverse("job_site", args=(jobsite_id, )))
 
 def edit_job(request, job_id):
-    if not request.user.is_authenticated:
-        return render(request, "jobs/login.html", {"message": None})
-    job=Job.objects.get(pk=job_id)
-     #fill in all properties that were submitted in the form
+    try:
+        if not request.user.is_authenticated:
+            return render(request, "jobs/login.html", {"message": None})
+        job=Job.objects.get(pk=job_id)
+        #fill in all properties that were submitted in the form
 
-    if "address" in request.POST:
-        job.job_site.address = request.POST["address"]
-    if "company" in request.POST:
-        job.company = request.POST["company"]
-    if "job_site" in request.POST:
-        job.job_site = request.POST["job_site"]
-    if "costs" in request.POST:
-        job.costs = int(request.POST["costs"])
-    # if "user_properties" in request.POST:
+        if "address" in request.POST:
+            job.job_site.address = request.POST["address"]
+        if "company" in request.POST:
+            job.company = request.POST["company"]
+        if "job_site" in request.POST:
+            job.job_site = request.POST["job_site"]
+        if "costs" in request.POST:
+            job.costs = int(request.POST["costs"])
+        # if "user_properties" in request.POST:
 
-    if "text_input_jobname" in request.POST:
-        if request.POST["text_input_jobname"] and request.POST["text_input_jobname"].strip():
-            job.job_name = request.POST["text_input_jobname"]
-    if "job_number" in request.POST:
-        job.job_number = request.POST["job_number"]
-    if "customer_name" in request.POST:
-        job.customer_name = request.POST["customer_name"]
-    if "site_contact" in request.POST:
-        job.site_contact = request.POST["site_contact"]
-    if "site_contact_info" in request.POST:
-        job.site_contact_info = request.POST["site_contact_info"]
-    if "project_manager" in request.POST:
-        job.project_manager = request.POST["project_manager"]
-    if "start_date" in request.POST:
-        if request.POST["start_date"]!="":
-            job.start_date = request.POST["start_date"]
-    if "end_date" in request.POST:
-        if request.POST["end_date"]!="":
-            job.end_date = request.POST["end_date"]
-    if "job_scope_details" in request.POST:
-        job.job_scope_details = request.POST["job_scope_details"]
-    if "work_schedule_i" in request.POST:
-        if request.POST["work_schedule_i"] and request.POST["work_schedule_i"].strip():
-            job.work_schedule = request.POST["work_schedule_i"]
-    if "edit_food" in request.POST:
-        if request.POST["edit_food"] and request.POST["edit_food"].strip():
-            job.food_accomodations = request.POST["edit_food"]
-    if "edit_lodging" in request.POST:
-        if request.POST["edit_lodging"] and request.POST["edit_lodging"].strip():
-            job.lodging_recommendations = request.POST["edit_lodging"]
-    if "food_accomodations" in request.POST:
-            job.food_accomodations = request.POST["food_accomodations"].strip()
-    if "lodging_recommendations" in request.POST:
-            job.lodging_recommendations = request.POST["lodging_recommendations"].strip()
-    if "weather_considerations" in request.POST:
-            job.weather_considerations = request.POST["weather_considerations"].strip()
-    if "text_input_address" in request.POST:
-        if request.POST["text_input_address"] and request.POST["text_input_address"].strip():
-            job.address = request.POST["text_input_address"]
-    if "text_input_address2" in request.POST:
-        if request.POST["text_input_address2"] and request.POST["text_input_address2"].strip():
-            job.address = request.POST["text_input_address2"]
-    if "edit_navlink" in request.POST:
-        if request.POST["edit_navlink"] and request.POST["edit_navlink"].strip():
-            job.nav_link = request.POST["edit_navlink"]
-    if "edit_sitenav" in request.POST:
-        if request.POST["edit_sitenav"] and request.POST["edit_sitenav"].strip():
-            job.site_navigation = request.POST["edit_sitenav"]
-    if "edit_special_te" in request.POST:
-        if request.POST["edit_special_te"] and request.POST["edit_special_te"].strip():
-            job.specialty_test_equipment = request.POST["edit_special_te"]
-    if "edit_ladders" in request.POST:
-        if request.POST["edit_ladders"] and request.POST["edit_ladders"].strip():
-            job.ladders = request.POST["edit_ladders"]
+        if "text_input_jobname" in request.POST:
+            if request.POST["text_input_jobname"] and request.POST["text_input_jobname"].strip():
+                job.job_name = request.POST["text_input_jobname"]
+        if "job_number" in request.POST:
+            job.job_number = request.POST["job_number"]
+        if "customer_name" in request.POST:
+            job.customer_name = request.POST["customer_name"]
+        if "site_contact" in request.POST:
+            job.site_contact = request.POST["site_contact"]
+        if "site_contact_info" in request.POST:
+            job.site_contact_info = request.POST["site_contact_info"]
+        if "project_manager" in request.POST:
+            job.project_manager = request.POST["project_manager"]
+        if "start_date" in request.POST:
+            if request.POST["start_date"]!="":
+                job.start_date = request.POST["start_date"]
+        if "end_date" in request.POST:
+            if request.POST["end_date"]!="":
+                job.end_date = request.POST["end_date"]
+        if "job_scope_details" in request.POST:
+            job.job_scope_details = request.POST["job_scope_details"]
+        if "work_schedule_i" in request.POST:
+            if request.POST["work_schedule_i"] and request.POST["work_schedule_i"].strip():
+                job.work_schedule = request.POST["work_schedule_i"]
+        if "edit_food" in request.POST:
+            if request.POST["edit_food"] and request.POST["edit_food"].strip():
+                job.food_accomodations = request.POST["edit_food"]
+        if "edit_lodging" in request.POST:
+            if request.POST["edit_lodging"] and request.POST["edit_lodging"].strip():
+                job.lodging_recommendations = request.POST["edit_lodging"]
+        if "food_accomodations" in request.POST:
+                job.food_accomodations = request.POST["food_accomodations"].strip()
+        if "lodging_recommendations" in request.POST:
+                job.lodging_recommendations = request.POST["lodging_recommendations"].strip()
+        if "weather_considerations" in request.POST:
+                job.weather_considerations = request.POST["weather_considerations"].strip()
+        if "text_input_address" in request.POST:
+            if request.POST["text_input_address"] and request.POST["text_input_address"].strip():
+                job.address = request.POST["text_input_address"]
+        if "text_input_address2" in request.POST:
+            if request.POST["text_input_address2"] and request.POST["text_input_address2"].strip():
+                job.address = request.POST["text_input_address2"]
+        if "edit_navlink" in request.POST:
+            if request.POST["edit_navlink"] and request.POST["edit_navlink"].strip():
+                job.nav_link = request.POST["edit_navlink"]
+        if "edit_sitenav" in request.POST:
+            if request.POST["edit_sitenav"] and request.POST["edit_sitenav"].strip():
+                job.site_navigation = request.POST["edit_sitenav"]
+        if "edit_special_te" in request.POST:
+            if request.POST["edit_special_te"] and request.POST["edit_special_te"].strip():
+                job.specialty_test_equipment = request.POST["edit_special_te"]
+        if "edit_ladders" in request.POST:
+            if request.POST["edit_ladders"] and request.POST["edit_ladders"].strip():
+                job.ladders = request.POST["edit_ladders"]
 
-    if "safety_training_time" in request.POST:
-        job.safety_training_time = request.POST["safety_training_time"]
-    if "safety_training_location" in request.POST:
-        job.safety_training_location = request.POST["safety_training_location"]
-    if "escort_considerations" in request.POST:
-        job.escort_considerations = request.POST["escort_considerations"].strip()
-    if "restricted_items" in request.POST:
-        job.job_site.restricted_items = request.POST["restricted_items"].strip()
-    if "access_requirements" in request.POST:
-        job.job_site.access_requirements = request.POST["access_requirements"].strip()
-    if "parking_considerations" in request.POST:
-        job.job_site.parking_considerations = request.POST["parking_considerations"].strip()
-    if "driving_vehicles" in request.POST:
-        job.job_site.driving_vehicles = request.POST["driving_vehicles"].strip()
-    if "entry_procedure" in request.POST:
-        job.job_site.entry_procedure = request.POST["entry_procedure"].strip()
-    if "documents_required_for_access" in request.POST:
-        job.job_site.documents_required_for_access = request.POST["documents_required_for_access"].strip()
-    if "background_check_procedure" in request.POST:
-        job.job_site.background_check_procedure = request.POST["background_check_procedure"].strip()
-    if "grounding_wire_size" in request.POST:
-        job.grounding_wire_size = request.POST["grounding_wire_size"]
-    if "grounding_clamp_style" in request.POST:
-        job.grounding_clamp_style = request.POST["grounding_clamp_style"]
-    if "grounding_cluster_quantity" in request.POST:
-        if request.POST["grounding_cluster_quantity"]!="":
-            job.grounding_cluster_quantity = int(request.POST["grounding_cluster_quantity"])
-    if "other_ppe_requirements" in request.POST:
-        job.other_ppe_requirements = request.POST["other_ppe_requirements"]
-    if "switching_specifications" in request.POST:
-        job.switching_specifications = request.POST["switching_specifications"]
-    if "live_work_voltage" in request.POST:
-        job.live_work_voltage = request.POST["live_work_voltage"]
-    if "chemical_hazards" in request.POST:
-        job.chemical_hazards = request.POST["chemical_hazards"]
-    if "permit_requirements" in request.POST:
-        job.permit_requirements = request.POST["permit_requirements"]
-    if "extension_cords" in request.POST:
-        job.extension_cords = request.POST["extension_cords"]
-    if "generators" in request.POST:
-        job.generators = request.POST["generators"]
-    if "gasoline" in request.POST:
-        if request.POST["gasoline"]!="":
-            job.gasoline = int(request.POST["gasoline"])
-    if "diesel" in request.POST:
-        if request.POST["diesel"] != "":
-            job.diesel = int(request.POST["diesel"])
-    # if "ladders" in request.POST:
-    #     job.ladders = request.POST["ladders"]
-    if "harness_lanyard" in request.POST:
-        job.harness_lanyard = request.POST["harness_lanyard"]
-    if "torque_wrenches" in request.POST:
-        job.torque_wrenches = request.POST["torque_wrenches"]
-    if "tables" in request.POST:
-        if request.POST["tables"]!="":
-            job.tables = int(request.POST["tables"])
-    if "chairs" in request.POST:
-        if request.POST["chairs"]!="":
-            job.chairs = int(request.POST["chairs"])
-    if "lifts" in request.POST:
-        job.lifts = request.POST["lifts"]
-    if "additional_tools" in request.POST:
-        job.additional_tools = request.POST["additional_tools"]
-    if "material" in request.POST:
-        job.material = request.POST["material"]
-    # if "job_folder" in request.POST:
-    #     job.job_folder = request.POST["job_folder"]
-    if "quoted_price" in request.POST:
-        if request.POST["quoted_price"]!="":
-            job.quoted_price = int(request.POST["quoted_price"])
+        if "safety_training_time" in request.POST:
+            job.safety_training_time = request.POST["safety_training_time"]
+        if "safety_training_location" in request.POST:
+            job.safety_training_location = request.POST["safety_training_location"]
+        if "escort_considerations" in request.POST:
+            job.escort_considerations = request.POST["escort_considerations"].strip()
+        if "restricted_items" in request.POST:
+            job.job_site.restricted_items = request.POST["restricted_items"].strip()
+        if "access_requirements" in request.POST:
+            job.job_site.access_requirements = request.POST["access_requirements"].strip()
+        if "parking_considerations" in request.POST:
+            job.job_site.parking_considerations = request.POST["parking_considerations"].strip()
+        if "driving_vehicles" in request.POST:
+            job.job_site.driving_vehicles = request.POST["driving_vehicles"].strip()
+        if "entry_procedure" in request.POST:
+            job.job_site.entry_procedure = request.POST["entry_procedure"].strip()
+        if "documents_required_for_access" in request.POST:
+            job.job_site.documents_required_for_access = request.POST["documents_required_for_access"].strip()
+        if "background_check_procedure" in request.POST:
+            job.job_site.background_check_procedure = request.POST["background_check_procedure"].strip()
+        if "grounding_wire_size" in request.POST:
+            job.grounding_wire_size = request.POST["grounding_wire_size"]
+        if "grounding_clamp_style" in request.POST:
+            job.grounding_clamp_style = request.POST["grounding_clamp_style"]
+        if "grounding_cluster_quantity" in request.POST:
+            if request.POST["grounding_cluster_quantity"]!="":
+                job.grounding_cluster_quantity = int(request.POST["grounding_cluster_quantity"])
+        if "other_ppe_requirements" in request.POST:
+            job.other_ppe_requirements = request.POST["other_ppe_requirements"]
+        if "switching_specifications" in request.POST:
+            job.switching_specifications = request.POST["switching_specifications"]
+        if "live_work_voltage" in request.POST:
+            job.live_work_voltage = request.POST["live_work_voltage"]
+        if "chemical_hazards" in request.POST:
+            job.chemical_hazards = request.POST["chemical_hazards"]
+        if "permit_requirements" in request.POST:
+            job.permit_requirements = request.POST["permit_requirements"]
+        if "extension_cords" in request.POST:
+            job.extension_cords = request.POST["extension_cords"]
+        if "generators" in request.POST:
+            job.generators = request.POST["generators"]
+        if "gasoline" in request.POST:
+            if request.POST["gasoline"]!="":
+                job.gasoline = int(request.POST["gasoline"])
+        if "diesel" in request.POST:
+            if request.POST["diesel"] != "":
+                job.diesel = int(request.POST["diesel"])
+        # if "ladders" in request.POST:
+        #     job.ladders = request.POST["ladders"]
+        if "harness_lanyard" in request.POST:
+            job.harness_lanyard = request.POST["harness_lanyard"]
+        if "torque_wrenches" in request.POST:
+            job.torque_wrenches = request.POST["torque_wrenches"]
+        if "tables" in request.POST:
+            if request.POST["tables"]!="":
+                job.tables = int(request.POST["tables"])
+        if "chairs" in request.POST:
+            if request.POST["chairs"]!="":
+                job.chairs = int(request.POST["chairs"])
+        if "lifts" in request.POST:
+            job.lifts = request.POST["lifts"]
+        if "additional_tools" in request.POST:
+            job.additional_tools = request.POST["additional_tools"]
+        if "material" in request.POST:
+            job.material = request.POST["material"]
+        # if "job_folder" in request.POST:
+        #     job.job_folder = request.POST["job_folder"]
+        if "quoted_price" in request.POST:
+            if request.POST["quoted_price"]!="":
+                job.quoted_price = int(request.POST["quoted_price"])
 
 
 
-    # #set all boolean values
-    if "is_startup" in request.POST:
-        job.is_startup=request.POST['is_startup'] == 'True'
-    if "is_preventative_maintenance" in request.POST:
-        job.is_preventative_maintenance=request.POST['is_preventative_maintenance'] == 'True'
-    if "is_troubleshooting" in request.POST:
-        job.is_troubleshooting=request.POST['is_troubleshooting'] == 'True'
-    if "is_warranty" in request.POST:
-        job.is_warranty=request.POST['is_warranty'] == 'True'
-    if "is_standard_testing" in request.POST:
-        job.is_standard_testing=request.POST['is_standard_testing'] == 'True'
-    if "is_neta_testing" in request.POST:
-        job.is_neta_testing=request.POST['is_neta_testing'] == 'True'
-    if "is_safety_training_required" in request.POST:
-        job.is_safety_training_required=request.POST['is_safety_training_required'] == 'True'
-    if "is_hardhat" in request.POST:
-        job.is_hardhat=request.POST['is_hardhat'] == 'True'
-    if "is_safety_glasses" in request.POST:
-        job.is_safety_glasses=request.POST['is_safety_glasses'] == 'True'
-    if "is_safety_shoes" in request.POST:
-        job.is_safety_shoes=request.POST['is_safety_shoes'] == 'True'
-    if "is_safety_vest" in request.POST:
-        job.is_safety_vest=request.POST['is_safety_vest'] == 'True'
-    if "is_safety_gloves" in request.POST:
-        job.is_safety_gloves=request.POST['is_safety_gloves'] == 'True'
-    if "is_fr_clothes" in request.POST:
-        job.is_fr_clothes = request.POST['is_fr_clothes'] == 'True'
-    if "is_h2s_monitor" in request.POST:
-        job.is_h2s_monitor=request.POST['is_h2s_monitor'] == 'True'
-    if "is_mv_voltage_detector" in request.POST:
-        job.is_mv_voltage_detector=request.POST['is_mv_voltage_detector'] == 'True'
-    if "is_insulated_gloves" in request.POST:
-        job.is_insulated_gloves=request.POST['is_insulated_gloves'] == 'True'
-    if "is_8cal_protection" in request.POST:
-        job.is_8cal_protection=request.POST['is_8cal_protection'] == 'True'
-    if "is_40cal_protection" in request.POST:
-        job.is_40cal_protection=request.POST['is_40cal_protection'] == 'True'
-    if "is_harness" in request.POST:
-        job.is_harness=request.POST['is_harness'] == 'True'
-    if "is_grounding_cluster" in request.POST:
-        job.is_grounding_cluster=request.POST['is_grounding_cluster'] == 'True'
-    if "is_6ft_work" in request.POST:
-        job.is_6ft_work=request.POST['is_6ft_work'] == 'True'
-    if "is_switching_required" in request.POST:
-        job.is_switching_required=request.POST['is_switching_required'] == 'True'
-    if "is_live_work_required" in request.POST:
-        job.is_live_work_required=request.POST['is_live_work_required'] == 'True'
-    if "is_ungaurded_holes" in request.POST:
-        job.is_ungaurded_holes=request.POST['is_ungaurded_holes'] == 'True'
-    if "is_confined_space" in request.POST:
-        job.is_confined_space=request.POST['is_confined_space'] == 'True'
-    if "is_time_and_materials" in request.POST:
-        job.is_time_and_materials = request.POST['is_time_and_materials'] == 'True'
-    if "edit_handtools_true" in request.POST:
-        if request.POST["edit_handtools_true"]=="True":
-            job.is_standard_handtools=True
-    elif "is_standard_handtools" in request.POST:
-        job.is_standard_handtools = request.POST["is_standard_handtools"] == "True"
-    if "bus_bender" in request.POST:
-        job.is_bus_bender = request.POST['bus_bender'] == 'True'
-    if "is_fork_lift" in request.POST:
-        job.is_fork_lift = request.POST['is_fork_lift'] == 'True'
-    if "is_trailer" in request.POST:
-        job.is_trailer = request.POST['is_trailer'] == 'True'
+        # #set all boolean values
+        if "is_startup" in request.POST:
+            job.is_startup=request.POST['is_startup'] == 'True'
+        if "is_preventative_maintenance" in request.POST:
+            job.is_preventative_maintenance=request.POST['is_preventative_maintenance'] == 'True'
+        if "is_troubleshooting" in request.POST:
+            job.is_troubleshooting=request.POST['is_troubleshooting'] == 'True'
+        if "is_warranty" in request.POST:
+            job.is_warranty=request.POST['is_warranty'] == 'True'
+        if "is_standard_testing" in request.POST:
+            job.is_standard_testing=request.POST['is_standard_testing'] == 'True'
+        if "is_neta_testing" in request.POST:
+            job.is_neta_testing=request.POST['is_neta_testing'] == 'True'
+        if "is_safety_training_required" in request.POST:
+            job.is_safety_training_required=request.POST['is_safety_training_required'] == 'True'
+        if "is_hardhat" in request.POST:
+            job.is_hardhat=request.POST['is_hardhat'] == 'True'
+        if "is_safety_glasses" in request.POST:
+            job.is_safety_glasses=request.POST['is_safety_glasses'] == 'True'
+        if "is_safety_shoes" in request.POST:
+            job.is_safety_shoes=request.POST['is_safety_shoes'] == 'True'
+        if "is_safety_vest" in request.POST:
+            job.is_safety_vest=request.POST['is_safety_vest'] == 'True'
+        if "is_safety_gloves" in request.POST:
+            job.is_safety_gloves=request.POST['is_safety_gloves'] == 'True'
+        if "is_fr_clothes" in request.POST:
+            job.is_fr_clothes = request.POST['is_fr_clothes'] == 'True'
+        if "is_h2s_monitor" in request.POST:
+            job.is_h2s_monitor=request.POST['is_h2s_monitor'] == 'True'
+        if "is_mv_voltage_detector" in request.POST:
+            job.is_mv_voltage_detector=request.POST['is_mv_voltage_detector'] == 'True'
+        if "is_insulated_gloves" in request.POST:
+            job.is_insulated_gloves=request.POST['is_insulated_gloves'] == 'True'
+        if "is_8cal_protection" in request.POST:
+            job.is_8cal_protection=request.POST['is_8cal_protection'] == 'True'
+        if "is_40cal_protection" in request.POST:
+            job.is_40cal_protection=request.POST['is_40cal_protection'] == 'True'
+        if "is_harness" in request.POST:
+            job.is_harness=request.POST['is_harness'] == 'True'
+        if "is_grounding_cluster" in request.POST:
+            job.is_grounding_cluster=request.POST['is_grounding_cluster'] == 'True'
+        if "is_6ft_work" in request.POST:
+            job.is_6ft_work=request.POST['is_6ft_work'] == 'True'
+        if "is_switching_required" in request.POST:
+            job.is_switching_required=request.POST['is_switching_required'] == 'True'
+        if "is_live_work_required" in request.POST:
+            job.is_live_work_required=request.POST['is_live_work_required'] == 'True'
+        if "is_ungaurded_holes" in request.POST:
+            job.is_ungaurded_holes=request.POST['is_ungaurded_holes'] == 'True'
+        if "is_confined_space" in request.POST:
+            job.is_confined_space=request.POST['is_confined_space'] == 'True'
+        if "is_time_and_materials" in request.POST:
+            job.is_time_and_materials = request.POST['is_time_and_materials'] == 'True'
+        if "is_standard_handtools" in request.POST:
+            job.is_standard_handtools = request.POST["is_standard_handtools"] == "True"
+        if "bus_bender" in request.POST:
+            job.is_bus_bender = request.POST['bus_bender'] == 'True'
+        if "is_fork_lift" in request.POST:
+            job.is_fork_lift = request.POST['is_fork_lift'] == 'True'
+        if "is_trailer" in request.POST:
+            job.is_trailer = request.POST['is_trailer'] == 'True'
 
-    if "trashed" in request.POST:
-        job.trashed = request.POST['trashed'] == 'True'
+        if "trashed" in request.POST:
+            job.trashed = request.POST['trashed'] == 'True'
 
-    if "archived" in request.POST:
-        job.archived = request.POST['archived'] == 'True'
+        if "archived" in request.POST:
+            job.archived = request.POST['archived'] == 'True'
 
-    if "completion" in request.POST:
-        job.completion = request.POST['completion'] == 'True'
+        if "completion" in request.POST:
+            job.completion = request.POST['completion'] == 'True'
 
-    job.save()
-    job.job_site.save()
-    return HttpResponseRedirect(reverse("job", args=(job_id, )))
+        job.save()
+        job.job_site.save()
+        return JsonResponse({"message":"success"})
+    except Exception as e:
+         return JsonResponse({"error": "Something went wrong"}, status=403)
 
 def add_job_files(request, job_id):
     if not request.user.is_authenticated:

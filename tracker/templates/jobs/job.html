@@ -206,6 +206,56 @@ h5{
 caption{
   background-color: #f5f6f7;
 }
+
+.form-switch {
+  display: inline-block;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.form-switch i {
+  position: relative;
+  display: inline-block;
+  margin-right: .5rem;
+  width: 46px;
+  height: 26px;
+  background-color: #e6e6e6;
+  border-radius: 23px;
+  vertical-align: text-bottom;
+  transition: all 0.3s linear;
+}
+.form-switch i::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 42px;
+  height: 22px;
+  background-color: #fff;
+  border-radius: 11px;
+  transform: translate3d(2px, 2px, 0) scale3d(1, 1, 1);
+  transition: all 0.25s linear;
+}
+.form-switch i::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  background-color: #fff;
+  border-radius: 11px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.24);
+  transform: translate3d(2px, 2px, 0);
+  transition: all 0.2s ease-in-out;
+}
+.form-switch:active i::after {
+  width: 28px;
+  transform: translate3d(2px, 2px, 0);
+}
+.form-switch:active input:checked + i::after { transform: translate3d(16px, 2px, 0); }
+.form-switch input { display: none; }
+.form-switch input:checked + i { background-color: #4BD763; }
+.form-switch input:checked + i::before { transform: translate3d(18px, 2px, 0) scale3d(0, 0, 0); }
+.form-switch input:checked + i::after { transform: translate3d(22px, 2px, 0); }
+
 </style>
 <div class="container" id="job_preloader">
   <div class="progress" style="padding-top: 20px;">
@@ -869,50 +919,36 @@ caption{
             <caption id="preparation_caption" class="phone-font-lrg computer-font-lrg"
             >Tools, Equipment, and Material</caption>
             <tr
+            {% comment %}
 			    {% if not job.specialty_test_equipment is None %}
-				class="hidden-stuff"
+				class=""
 			    {% endif %}
+          {% endcomment %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Specialty Test Sets</td>
-              <td class="phone-font-med">
+              <td class="phone-font-med" ondblclick="doubleClick('edit_special_te')">
                 <div class="col s12">{{job.specialty_test_equipment}}</div><a class="col s1" href="#" id="text_edit_special_te" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
                 <textarea id="edit_special_te" name="edit_special_te" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.specialty_test_equipment}}</textarea>
               </td>
             </tr>
             <tr>
               <td class="phone-font-med" style="font-weight: 500;">Basic Handtools</td>
-              <td class="phone-font-med">
-                <div class="col s12">{% if job.is_standard_handtools %}
-                <b>Yes,</b> basic handtools are required.
-                {% else %}
-                <b>No,</b> basic handtools are not required.
-                {% endif %}</div>
+              <td class="phone-font-med" id="showdata">
                 <a class="col s1" href="#" id="text_edit_handtools" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <div id="is_standard_handtools" hidden class="job_edit editable-field">
-                  <label>
-                      <input name="is_standard_handtools" id="is_standard_handtools_false"
-                                type="radio" form="job_edit" value='False'
-                             {% if not job.is_standard_handtools %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>&nbsp No &nbsp</span>
-                  </label>
-                  <label>
-                      <input name="is_standard_handtools" id="is_standard_handtools_true"
-                             type="radio" form="job_edit" value='True'
-                             {% if job.is_standard_handtools %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>Yes</span>
+                <div  id="is_standard_handtools_" class="job_edit editable-field">
+                  <label class="form-switch">
+                    <input type="checkbox" name="is_standard_handtools" 
+                    id="is_standard_handtools"  onclick="toggleSwitch('is_standard_handtools')" 
+                    {%if job.is_standard_handtools%} checked {%endif%}>
+                    <i></i>
                   </label>
                 </div>
+               
               </td>
             </tr>
             <tr
                 {% if not job.generators %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Generators</td>
@@ -923,7 +959,7 @@ caption{
             </tr>
             <tr
                 {% if not job.fuels %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Fuels</td>
@@ -945,7 +981,7 @@ caption{
             </tr>
             <tr
                 {% if not job.ladders %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Ladders</td>
@@ -956,7 +992,7 @@ caption{
             </tr>
             <tr
                 {% if not job.tables and not job.chairs %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Tables and Chairs</td>
@@ -970,37 +1006,21 @@ caption{
             </tr>
             <tr
             {% if not job.is_grounding_cluster %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Grounding Clusters</td>
               <td class="phone-font-med">
                 <div class="col s12">
-                  {% if job.is_grounding_cluster %}
-                    <b>Required. </b>
-                    We must apply {{job.grounding_cluster_quantity|default_if_none:'undefined quantity of'}} grounding clusters with a wire size of {{job.grounding_wire_size|default_if_none:'undefined' }} SWG.
-                    <span style="font-weight: 900;">Clamp end style:</span> {{job.grounding_clamp_style|default_if_none:'unkown'}}.
-                  {% else %}
-                  No grounding requirements specified
-                  {% endif %}
-                  <div class="job_edit editable-field" hidden >
-                    Grounding Required?
-                    <label>
-                        <input name="is_grounding_cluster1" id="is_grounding_cluster_false1" onchange="if($(this).is(':checked')){$('#is_grounding_cluster_false').prop('checked', true)}" type="radio" form="job_edit" value='False'
-                            {% if not job.is_grounding_cluster %}
-                                checked
-                            {% endif %}
-                        />
-                        <span>No</span>
-                    </label>
-                    <label>
-                        <input name="is_grounding_cluster1" id="is_grounding_cluster_true1" onchange="if($(this).is(':checked')){$('#is_grounding_cluster_true').prop('checked', true)}" type="radio" form="job_edit" value='True'
-                            {% if job.is_grounding_cluster %}
-                                checked
-                            {% endif %}
-                        />
-                        <span>Yes</span>
-                    </label>
+                  <div class="job_edit editable-field" >
+                    <div  id="is_grounding_cluster_" class="job_edit">
+                        <label class="form-switch">
+                          <input type="checkbox" name="is_grounding_cluster" 
+                          id="is_grounding_cluster"  onclick="toggleSwitch('is_grounding_cluster')" 
+                          {%if job.is_grounding_cluster%} checked {%endif%}>
+                          <i></i>
+                        </label>
+                    </div>
 
                     <div class="job_edit grounding_cluster"
                           {% if not job.is_grounding_cluster %}
@@ -1019,7 +1039,7 @@ caption{
             </tr>
             <tr
                 {% if not job.harness_lanyard %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Harness & Lanyards</td>
@@ -1030,7 +1050,7 @@ caption{
             </tr>
             <tr
                 {% if not job.torque_wrenches %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Torque Wrenches</td>
@@ -1041,7 +1061,7 @@ caption{
             </tr>
             <tr
 			    {% if not job.lifts %}
-				    class="hidden-stuff"
+				    class=""
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Man Lifts</td>
@@ -1052,114 +1072,59 @@ caption{
             </tr>
             <tr
 			    {% if not job.is_bus_bender %}
-				    class="hidden-stuff"
+				    class=""
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Bus Bender</td>
               <td class="phone-font-med">
-                <div class="col s12">
-                    {% if job.is_bus_bender %}
-                        Bus bender required.
-                    {% else %}
-                        Bus bender is not required.
-                    {% endif %}
-                </div>
-                <div id="edit_handtools" class="job_edit editable-field" hidden>
-                  <label>
-                      <input name="bus_bender" id="bus_bender"
-                                type="radio" form="job_edit" value='False'
-                             {% if not job.is_bus_bender %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="bus_bender" id="bus_bender"
-                             type="radio" form="job_edit" value='True'
-                             {% if job.is_bus_bender %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>Yes</span></label>
+                <div  id="edit_handtools" class="job_edit editable-field">
+                    <label class="form-switch">
+                        <input type="checkbox" name="bus_bender" 
+                        id="bus_bender"  onclick="toggleSwitch('bus_bender')" 
+                        {%if job.is_bus_bender%} checked {%endif%}>
+                        <i></i>
+                    </label>
                 </div>
               </td>
             </tr>
             <tr
                 {% if not job.is_fork_lift %}
-                    class="hidden-stuff"
+                    class=""
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Fork Lift</td>
               <td class="phone-font-med">
-                <div class="col s12">
-                    {% if job.is_fork_lift %}
-                        Fork lift required.
-                    {% else %}
-                        Fork lift is not required.
-                    {% endif %}
-                </div>
-                <div id="is_fork_lift" class="job_edit editable-field" hidden>
-                  <label>
-                      <input name="is_fork_lift" id="is_fork_lift_false"
-                                type="radio" form="job_edit" value='False'
-                             {% if not job.is_fork_lift %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_fork_lift" id="is_fork_lift_true"
-                             type="radio" form="job_edit" value='True'
-                             {% if job.is_fork_lift %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>Yes</span>
-                  </label>
+               
+                <div id="is_fork_lift_" class="job_edit editable-field">
+                    <label class="form-switch">
+                        <input type="checkbox" name="is_fork_lift" 
+                        id="is_fork_lift"  onclick="toggleSwitch('is_fork_lift')" 
+                        {%if job.is_fork_lift%} checked {%endif%}>
+                        <i></i>
+                    </label>
                 </div>
               </td>
             </tr>
             <tr
 			    {% if not job.is_trailer %}
-				class="hidden-stuff"
+				class=""
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Trailer</td>
               <td class="phone-font-med">
-                <div class="col s12">
-                    {% if job.is_trailer %}
-                        Trailer required.
-                    {% else %}
-                        Trailer is not required.
-                    {% endif %}
-                </div>
-                <div id="is_trailer" class="job_edit editable-field" hidden>
-                  <label>
-                      <input name="is_trailer" id="is_trailer_false"
-                                type="radio" form="job_edit" value='False'
-                             {% if not job.is_trailer %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_trailer" id="is_trailer_true"
-                             type="radio" form="job_edit" value='True'
-                             {% if job.is_trailer %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>Yes</span>
-                  </label>
+                <div id="is_trailer_" class="job_edit editable-field">
+                    <label class="form-switch">
+                        <input type="checkbox" name="is_trailer" 
+                        id="is_trailer"  onclick="toggleSwitch('is_trailer')" 
+                        {%if job.is_trailer%} checked {%endif%}>
+                        <i></i>
+                    </label>
                 </div>
               </td>
             </tr>
             <tr
 			    {% if not job.additional_tools %}
-				class="hidden-stuff"
+				class=""
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Additional Tools</td>
@@ -1170,7 +1135,7 @@ caption{
             </tr>
             <tr
 			    {% if not job.material %}
-				    class="hidden-stuff"
+				    class=""
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Material</td>
@@ -1259,7 +1224,7 @@ caption{
             </tr>
             <tr id="other-ppe" 
             {% if not job.other_ppe_requirements %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Other PPE Requirements</td>
@@ -1613,7 +1578,7 @@ caption{
       <tr
           style="display: none;"
           {% if not job.escort_considerations %}
-                class="hidden-stuff" 
+                class="" 
           {% endif %}
       >
           <td class="phone-font-med" style="font-weight: 500;">Site Chaperones</td>
@@ -1648,7 +1613,6 @@ caption{
      {% endcomment %}
         {% include "jobs/safety_sheet.html" with equipment=equipment %}
       
-    </div>
       <table class="highlight">
         <tr>
           <td class="phone-font-med" style="font-weight: 500;">Safety Training</td>
@@ -2028,7 +1992,7 @@ caption{
         </tr>
         <tr id="other-ppe" 
         {% if not job.other_ppe_requirements %}
-            class="hidden-stuff"
+            class=""
         {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Other PPE Requirements</td>
@@ -2052,30 +2016,12 @@ caption{
           <td class="phone-font-med" style="font-weight: 500;">Elevated Work</td>
           <td class="phone-font-med">
             <div class="col s12">
-                {% if job.is_6ft_work %}
-                  <b>Yes. </b>There will be work requirements above 6 feet.
-                {% else %}
-                    No
-                {% endif %}
-                <div class="job_edit editable-field" hidden>
-                    Will there be work above 6 feet? <br>
-                    <label>
-                        <input name="is_6ft_work" id="is_6ft_work_false"
-                                  type="radio" form="job_edit" value='False'
-                               {% if not job.is_6ft_work %}
-                                   checked
-                               {% endif %}
-                        />
-                        <span>No</span>
-                    </label>
-                    <label>
-                        <input name="is_6ft_work" id="is_6ft_work_true"
-                               type="radio" form="job_edit" value='True'
-                               {% if job.is_6ft_work %}
-                                   checked
-                               {% endif %}
-                        />
-                        <span>Yes</span>
+                <div class="job_edit editable-field">
+                    <label class="form-switch">
+                        <input type="checkbox" name="is_6ft_work" 
+                        id="is_6ft_work"  onclick="toggleSwitch('is_6ft_work')" 
+                        {%if job.is_6ft_work%} checked {%endif%}>
+                        <i></i>
                     </label>
                 </div>
             </div>
@@ -2085,37 +2031,19 @@ caption{
 
         <tr
             {% if not job.is_switching_required %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Switching</td>
           <td class="phone-font-med">
             <div class="col s12">
-                {% if job.is_switching_required %}
-                  {{ job.switching_specifications }}
-                {% else %}
-                    None
-                {% endif %}
-              <div class="job_edit editable-field" hidden>
-                  Is switching required?
-                  <label>
-                      <input name="is_switching_required" id="is_switching_required_false"
-                                type="radio" form="job_edit" value='False'
-                             {% if not job.is_switching_required %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_switching_required" id="is_switching_required_true"
-                             type="radio" form="job_edit" value='True'
-                             {% if job.is_switching_required %}
-                                 checked
-                             {% endif %}
-                      />
-                      <span>Yes</span>
-                  </label>
+              <div class="job_edit editable-field">
+                  <label class="form-switch">
+                    <input type="checkbox" name="is_switching_required" 
+                    id="is_switching_required"  onclick="toggleSwitch('is_switching_required')" 
+                    {%if job.is_switching_required%} checked {%endif%}>
+                    <i></i>
+                    </label>
                   <br> <br>
                   <label for="switching_specifications" style="font-size: 14px;">Provide details on safety considerations like switch voltage and arcflash rating</label>
                   <textarea id="switching_specifications"
@@ -2133,37 +2061,18 @@ caption{
 
         <tr
             {% if not job.is_live_work_required %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Live Work</td>
           <td class="phone-font-med">
-              <div class="col s12">
-                  {% if job.is_live_work_required %}
-                    <b>Required. </b>Live work at {{job.live_work_voltage}}V
-                  {% else %}
-                       <b>No,</b> Live work is not required.
-                  {% endif %}
-              </div>
-              <div class="editable-field" hidden>
-                  Will there be live work?
-                  <label>
-                      <input name="is_live_work_required" id="is_live_work_required_false" type="radio" form="job_edit" value='False'
-                          {% if not job.is_live_work_required %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_live_work_required" id="is_live_work_required_true" type="radio" form="job_edit" value='True'
-                          {% if job.is_live_work_required %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>Yes, live work is required.</span>
-                  </label>
-
+              <div class="editable-field">
+                  <label class="form-switch">
+                    <input type="checkbox" name="is_live_work_required" 
+                    id="is_live_work_required"  onclick="toggleSwitch('is_live_work_required')" 
+                    {%if job.is_live_work_required%} checked {%endif%}>
+                    <i></i>
+                    </label>
                   <div class="job_edit" id="live_work_voltage"
                        {% if not job.is_live_work_required %}
                         hidden
@@ -2178,79 +2087,41 @@ caption{
         </tr>
         <tr
             {% if not job.is_ungaurded_holes %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Open Holes</td>
           <td class="phone-font-med">
-              <div class="col s12">
-                  {% if job.is_ungaurded_holes %}
-                    <b>Yes. </b> There will be exposure to holes without guardrailes with a depth of 4ft or greater.
-                  {% else %}
-                      No
-                  {% endif %}
-              </div>
-
-              <div class="editable-field" hidden>
-                  Has open holes?
-                  <label>
-                      <input name="is_ungaurded_holes" id="is_ungaurded_holes_false" type="radio" form="job_edit" value='False'
-                          {% if not job.is_ungaurded_holes %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_ungaurded_holes" id="is_ungaurded_holes_true" type="radio" form="job_edit" value="True"
-                          {% if job.is_ungaurded_holes %}
-                              checked
-                          {% endif %}
-                      />
-                      <span><b>Yes. </b> There will be exposure to holes without guardrailes with a depth of 4ft or greater.</span>
+              <div class="editable-field">
+                  <label class="form-switch">
+                    <input type="checkbox" name="is_ungaurded_holes" 
+                    id="is_ungaurded_holes"  onclick="toggleSwitch('is_ungaurded_holes')" 
+                    {%if job.is_ungaurded_holes%} checked {%endif%}>
+                    <i></i>
                   </label>
               </div>
           </td>
         </tr>
         <tr
             {% if not job.is_confined_space %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Confined Space</td>
           <td class="phone-font-med">
-              <div class="col s12">
-                  {% if job.is_confined_space %}
-                      <b>Yes. </b>Some work will be done in confined spaces.
-                  {% else %}
-                      No
-                  {% endif %}
-              </div>
-
-              <div class="editable-field" hidden>
-                  Has confined spaces?
-                  <label>
-                      <input name="is_confined_space" id="is_confined_space_false" type="radio" form="job_edit" value='False'
-                          {% if not job.is_confined_space %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_confined_space" id="is_confined_space_true" type="radio" form="job_edit" value="True"
-                          {% if job.is_confined_space %}
-                              checked
-                          {% endif %}
-                      />
-                      <span><b>Yes. </b>Some work will be done in confines spaces.</span>
+              <div class="editable-field">
+                  <label class="form-switch">
+                    <input type="checkbox" name="is_confined_space" 
+                    id="is_confined_space"  onclick="toggleSwitch('is_confined_space')" 
+                    {%if job.is_confined_space%} checked {%endif%}>
+                    <i></i>
                   </label>
               </div>
           </td>
         </tr>
         <tr
             {% if not job.chemical_hazards %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Chemicals</td>
@@ -2267,7 +2138,7 @@ caption{
         </tr>
         <tr
             {% if not job.harness_lanyard %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Harness & Lanyard Details</td>
@@ -2285,7 +2156,7 @@ caption{
         </tr>
         <tr
             {% if not job.permit_requirements %}
-                class="hidden-stuff"
+                class=""
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Permits</td>
@@ -2313,25 +2184,14 @@ caption{
                   {% endif %}
               <br> <br>
 
-              <div class="editable-field" hidden>
-                  Grounding Required?
-                  <label>
-                      <input name="is_grounding_cluster" id="is_grounding_cluster_false" onchange="if($(this).is(':checked')){$('#is_grounding_cluster_false1').prop('checked', true)}" type="radio" form="job_edit" value='False'
-                          {% if not job.is_grounding_cluster %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>No</span>
-                  </label>
-                  <label>
-                      <input name="is_grounding_cluster" id="is_grounding_cluster_true" onchange="if($(this).is(':checked')){$('#is_grounding_cluster_true1').prop('checked', true)}" type="radio" form="job_edit" value='True'
-                          {% if job.is_grounding_cluster %}
-                              checked
-                          {% endif %}
-                      />
-                      <span>Yes</span>
-                  </label>
-
+                    <div  class="job_edit">
+                        <label class="form-switch">
+                        <input type="checkbox" name="is_grounding_cluster" 
+                        id="is_grounding_cluster"  onclick="toggleSwitch('is_grounding_cluster')" 
+                        {%if job.is_grounding_cluster%} checked {%endif%}>
+                        <i></i>
+                        </label>
+                    </div>
                   <div class="job_edit grounding_cluster"
                        {% if not job.is_grounding_cluster %}
                         hidden
@@ -2343,7 +2203,7 @@ caption{
                     <br> Clamp End Style:
                     <input form="job_edit" type="text" id="grounding_clamp_style" onfocusout="$('#grounding_clamp_style1').val($(this).val())" name="grounding_clamp_style" value="{{ job.grounding_clamp_style }}" style="width: 125px; text-align: center"  />
                   </div>
-              </div>
+              
             </div>
           </td>
         </tr>
@@ -2390,7 +2250,7 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
               >
           </td>
         </tr>
-        <tr class="hidden-stuff">
+        <tr class="">
           <td class="phone-font-med" style="font-weight: 500;">Food Accomodations</td>
           <td class="phone-font-med">
               <div class="col s12">
@@ -2408,7 +2268,7 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
               >{{job.food_accomodations}}</textarea>
           </td>
         </tr>
-        <tr class="hidden-stuff">
+        <tr class="">
           <td class="phone-font-med" style="font-weight: 500;">Lodging Recommendations</td>
           <td class="phone-font-med">
               <div class="col s12">
@@ -2429,37 +2289,12 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
         <tr>
           <td class="phone-font-med" style="font-weight: 500;">Pricing Style</td>
           <td>
-            <div class="col s12">
-              {% if job.is_time_and_materials %}
-                Job is time and materials.
-              {% else %}
-                Job is quoted. <u>Before</u> commencing, new tasks outside of scope will need to be quoted seperately.
-              {% endif %}
-            </div>
-          <br>
-            <div id="edit_handtools" hidden class="editable-field job_edit">
-                Is time and materials?
-                <label>
-                    <input name="is_time_and_materials"
-                           id="is_time_and_materials"
-                           type="radio"
-                           form="job_edit"
-                           {% if job.is_time_and_materials %}
-                               checked
-                           {% endif %}
-                           value='True'/>
-                    <span>Yes</span>
-                </label>
-                <label>
-                    <input name="is_time_and_materials"
-                           id="is_time_and_materials"
-                           type="radio"
-                           form="job_edit"
-                           {% if not job.is_time_and_materials %}
-                               checked
-                           {% endif %}
-                           value='False' />
-                    <span>No</span>
+            <div class="editable-field job_edit">
+                <label class="form-switch">
+                    <input type="checkbox" name="is_time_and_materials" 
+                    id="is_time_and_materials"  onclick="toggleSwitch('is_time_and_materials')" 
+                    {%if job.is_time_and_materials%} checked {%endif%}>
+                    <i></i>
                 </label>
             </div>
           </td>
@@ -2737,6 +2572,57 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
             $("#task_status"+id).val("true")
         }
     }
+
+    function toggleSwitch(id){
+        let value = $("#"+id).is(":checked")
+        let xx = ""
+        if(value){
+          xx = "True"
+        }
+        let data = {}
+        data[id] = xx,
+        data['csrfmiddlewaretoken'] = '{{ csrf_token }}'
+        console.log("data", data)
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'edit_job' job.id %}",
+          data: data,
+          dataType: "json",
+          success: function(resultData) {
+            console.log("succes")
+          },
+          error: function(data){
+               alert(data.responseJSON.error);
+               }
+        });
+    }
+
+    function doubleClick(item) {
+      $('#'+item).toggle()
+    }
+
+    $(function () {
+      $('#edit_special_te').blur(function (e) {
+        e.preventDefault();
+        var x = document.getElementById("edit_special_te").value;
+        console.log("#######", x)
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'edit_job' job.id %}",
+          data: {"edit_special_te": x,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'},
+          dataType: "json",
+          success: function(resultData) {
+            document.getElementById("edit_special_te").previousElementSibling.previousElementSibling.innerText = x;
+            $('#'+"edit_special_te").toggle()
+          },
+          error: function(data){
+               alert(data.responseJSON.error);
+               }
+        });
+      });
+    });
+
 
   function addNoteModal(pk, name){
     $('#eq_name_add_note').html(name)
