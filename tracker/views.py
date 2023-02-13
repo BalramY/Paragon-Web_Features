@@ -257,9 +257,10 @@ def job(request, job_id):
 
         fsrs = job.fsrs
         non_fsrs=[]
+        checked_fsr = job.user_properties.all()
         for fsr in UserProperties.objects.filter(is_fsr=True, company = user_properties.company):
-            if fsr not in fsrs:
-                non_fsrs.append(fsr)
+            # if fsr not in fsrs:
+            non_fsrs.append(fsr)
         #define strings that will be conditional on completion/archive/trash status'
         if (job.trashed==False):
             trash_button="Trash Job"
@@ -314,6 +315,7 @@ def job(request, job_id):
         "notes": notes,
         "fsrs": fsrs,
         "non_fsrs": non_fsrs,
+        "checked_fsr": checked_fsr,
         "equipments": equipments,
         "equipment_count": job.equipment_count,
         "fsr_count": job.fsr_count,

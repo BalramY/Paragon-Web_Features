@@ -1053,16 +1053,16 @@ def add_fsr(request, job_id):
     if not request.user.is_authenticated:
         return render(request, "jobs/login.html", {"message": None})
     try:
-        fsr_id = int(request.POST["fsr"])
-        fsr = UserProperties.objects.get(pk=fsr_id)
         job = Job.objects.get(pk=job_id)
+        fsr_items = request.POST.getlist('fsr')
+        fsr_items = [UserProperties.objects.get(id=int(fsr_id)) for fsr_id in fsr_items]
     except KeyError:
         return render(request, "jobs/error.html", {"message": "No Selection"})
     except UserProperties.DoesNotExist:
         return render(request, "jobs/error.html", {"message": "Invalid FSR Selection."})
     except Job.DoesNotExist:
         return render(request, "jobs/error.html", {"message": "Invalid Job Selection."})
-    job.user_properties.add(fsr)
+    job.user_properties.set(fsr_items)
 
     return HttpResponseRedirect(reverse("job", args=(job_id, ))+"#fsr_add_form")
 

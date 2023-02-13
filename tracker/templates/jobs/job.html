@@ -477,14 +477,15 @@ caption{
           padding-bottom: 10px; padding-left: 10px;" action="{% url 'add_fsr' job.id %}" method="post">
             {% csrf_token %}
             <div class="row">
-              <div class="comp-spacer">
-              <select class="phone-font-ml" style="height: auto;" searchable="true" id="fsr" name="fsr">
-                {% for fsr in non_fsrs %}
-                <option class="phone-font-ml" value="{{ fsr.id }}">{{ fsr }}</option>
-                {% endfor %}
-              </select>
-              <button class="btn right phone-button" style="margin-top: 10px;" type="submit">Add Now <i class="material-icons right">send</i></button>
-            </div>
+              <div class="input-field col s12 comp-spacer">
+                <select class="phone-font-ml" multiple style="height: auto; display: none;" searchable="true" id="fsr" name="fsr" >
+                    <option class="phone-font-ml" disabled selected>Select Multiple Crew</option>
+                    {% for fsr in non_fsrs %}
+                        <option class="phone-font-ml" value="{{ fsr.id }}" {% if fsr in checked_fsr %} selected {% endif %}>{{ fsr }}</option>
+                    {% endfor %}
+                </select>
+                <button class="btn right phone-button" style="margin-top: 10px;" type="submit">Add Now <i class="material-icons right">send</i></button>
+              </div>
             </div>
           </form>
           {% else %}
