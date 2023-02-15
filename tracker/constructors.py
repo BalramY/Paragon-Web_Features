@@ -1479,7 +1479,8 @@ def add_equipment(request, job_id=None):
         new_equipment.save()
         new_equipment.equipment_mold = site_equipment
         new_equipment.save()
-
+        if request.session.has_key('new_type'):
+            del request.session['new_type'] 
     return HttpResponseRedirect(reverse("job", args=(job_id, ))+"#equipment")
 
 def download_xlsx(request, equipment_id):
@@ -5394,8 +5395,15 @@ def create_type(request):
                 return HttpResponseRedirect(reverse("jobs"))
 
     new_type.save()
-
-    return HttpResponseRedirect(reverse("eq_type", args=(new_type.pk, )))
+    
+    if request.POST['job_id'].strip():
+        job_id = request.POST['job_id'].strip()
+        # request.session['new_type'] = str(new_type.name)        
+        return HttpResponseRedirect(reverse("job_w_type", args=(job_id, new_type.name, "type"))+ "#equipment")
+    else:
+        # if request.session.has_key('new_type'):
+        #         del request.session['new_type'] 
+        return HttpResponseRedirect(reverse("eq_type", args=(new_type.pk, )))
 
 
 def edit_type(request, type_id):
@@ -5830,6 +5838,11 @@ def create_model(request):
                     return render(request, "jobs/error.html", {"message": "Error with selected Optional Equipment"})
 
         new_model.save()
+        if request.POST['job_id'].strip():
+            job_id = request.POST['job_id'].strip()
+            # request.session['new_type'] = str(new_type.name)
+            print("model created", new_model)     
+            return HttpResponseRedirect(reverse("job_w_type", args=(job_id, new_model.id, "model"))+ "#equipment")
         return HttpResponseRedirect(reverse("eq_model", args=(new_model.pk, )))
     else:
         return render(request, "jobs/error.html", {"message": "Requires Name, Type, and Manufacturer"})

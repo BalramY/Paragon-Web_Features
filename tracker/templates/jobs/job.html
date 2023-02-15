@@ -583,10 +583,9 @@ caption{
         <div class="row"><h4 class="phone-font-xl phone-screen">Equipment</h4></div>
         
         <div class="row bottom-pad noselect">
-          <a class="phone-font-lrg left-pad right left-spacing hover-item right-pad" onclick="$('#eq_child_div-container').slideToggle('fast'); $('#search_eq_child_div').focus()" >            
-            <span class="computer-screen">Search</span> &#x1F50E 
-      </a> 
-     
+            <a class="phone-font-lrg left-pad right left-spacing hover-item right-pad" onclick="$('#eq_child_div-container').slideToggle('fast'); $('#search_eq_child_div').focus()" >            
+                <span class="computer-screen">Search</span> &#x1F50E 
+            </a> 
         </div>
         
         <!-- <div class="row" id="eq_child_div-container" style="display: none;">
@@ -643,13 +642,13 @@ caption{
 
         <a class='dropdown-trigger dropdown-auto btn-small phone-font-lrg phone-button phone-btn-spacer secondary-act z-depth-0' href='#' data-target='equip_actions'> Options <i class="material-icons right">menu</i> </a>
         <a class="dropdown-trigger dropdown-auto waves-effect waves-light btn-small phone-button phone-btn-spacer" style="display: none;" href="#" data-target="add_eq_dropdown">Equipment Assembly</a>
-        <a class="phone-button btn-small phone-btn-spacer" href="{% url 'add_equipment_page' job.id %}" id="add_eq_button" >Quick Add</a>
+        <a class="phone-button btn-small phone-btn-spacer" href="#" id="add_eq_button" >Quick Add</a>
 
         <span id="eq_assembly_help" class="help-btn hover-item"><i class="material-icons-outlined inline-icon">info</i></span>
         <ul id="add_eq_dropdown" class="dropdown-content">
         </ul>
         
-          <div style="margin-top: 10px; text-align: right;">
+        <div style="margin-top: 10px; text-align: right;">
             <a class="waves-effect waves-light btn-small phone-button" id='select_all_eq' onclick="selectAllEq()"><i class="material-icons-outlined left phone-font-lrg ">library_add_check</i>Select All</a>
             <a class="waves-effect waves-light btn-small phone-button" id='deselect_all_eq' style="display: none;" onclick="deSelectAllEq()"><i class="material-icons-outlined left phone-font-lrg ">library_add_check</i>Deselect All</a>     
             <div class="fixed-action-btn" id="edit_id_div" hidden>
@@ -683,7 +682,12 @@ caption{
                 </td>
               </tr>
             </table>
-</div>
+        </div>
+
+        <div id="quick_add" {% if not new_type and not new_model %} class=" hidden" {% endif %}>
+            {% include './add_equipment_modals.html' %}
+        </div>
+
         <form id="batch_actions_form" action="{% url 'equipment_batch_actions' job.id %}" method="post">
           {% csrf_token %}
           <input type="hidden" id="batchActionsData" name="batchActionsData" value="">
@@ -1285,9 +1289,9 @@ caption{
             <div id="update-test-equipment" hidden>
               <div class="row">
                 <div class="input-field col s12 phone-font-lrg">
-                  <div id="m_test_equipment-chips" class="chips chips-autocomplete phone-font-lrg">
+                  <div id="r_test_equipment-chips" class="chips chips-autocomplete phone-font-lrg">
                   </div>
-                  <input id="mandatory_test_equipment"
+                  <input id="rmandatory_test_equipment"
                          form="job_edit_test_equipment"
                          name="mandatory_test_equipment"
                          style="display: none;"
@@ -2805,7 +2809,7 @@ $('#cancel-update-test-equipment-button').click(function() {
 })
 let jobTestEquipments = {{ job.test_equipments_name|safe }}
 let allEquipments = {{ test_equipments|safe}}
-$('#m_test_equipment-chips').chips({
+$('#r_test_equipment-chips').chips({
     placeholder: 'Type to Filter',
     secondaryPlaceholder: '+Add More',
     autocompleteOptions: {
@@ -2852,9 +2856,9 @@ $('#m_test_equipment-chips').chips({
 });
 
   function onSubmit() {
-    var mandatoryInstance = M.Chips.getInstance($("#m_test_equipment-chips"));
+    var mandatoryInstance = M.Chips.getInstance($("#r_test_equipment-chips"));
     var mandatoryValue = Array.from(mandatoryInstance.chipsData.map(x => x.tag)).join(",");
-    $("#mandatory_test_equipment").val(mandatoryValue);
+    $("#rmandatory_test_equipment").val(mandatoryValue);
   }
 
 $('.parent-checkbox').click(function(){
@@ -2963,8 +2967,12 @@ function jobEqToggle(eq_id){
   }
 
   let tabInstance = null;
-  let testEquipmentChipsInstance = M.Chips.getInstance($("#m_test_equipment-chips"));
+  let testEquipmentChipsInstance = M.Chips.getInstance($("#r_test_equipment-chips"));
   $(document).ready(function(){
+    $("#add_eq_button").click(function(){
+        $("#quick_add").slideToggle();
+    });
+
     if($(window).width() < 1519){
       $('.hoverable').removeClass('hoverable')
     }
@@ -3031,7 +3039,7 @@ function jobEqToggle(eq_id){
        }
       
      })
-      testEquipmentChipsInstance = M.Chips.getInstance($("#m_test_equipment-chips"));
+      testEquipmentChipsInstance = M.Chips.getInstance($("#r_test_equipment-chips"));
       {% for test_equipment in job.test_equipments %}
             testEquipmentChipsInstance.addChip({tag: '{{ test_equipment.0 }}'})
       {% endfor %}

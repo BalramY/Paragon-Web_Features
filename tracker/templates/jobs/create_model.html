@@ -101,6 +101,7 @@ Create Model
 
   <form id="model_form" class="col s12" action="{% url 'create_model' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <input type="text" name="job_id" value="{{job_id}}" style="visibility: hidden;">
     <div class="row">
       <div class="input-field col s12 m12 l12 xl4">
         <label class="active  " for="model_type">Model Type (required)</label>

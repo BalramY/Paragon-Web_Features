@@ -7,6 +7,7 @@ urlpatterns = [
     path("birdseye", views.birdseye, name="birdseye"),
     path("jobs", views.jobs, name="jobs"),
     path("job/<int:job_id>", views.job, name="job"),
+    path("job/<int:job_id>/<str:new_obj>/<str:obj_type>", views.job, name="job_w_type"),
     path("equipment/<int:equipment_id>/edit", constructors.edit_equipment, name="edit_equipment"),
     path("fsr<int:fsr_id>", views.fsr_info, name="fsr_info"),
     path("<int:job_id>/add_fsr", constructors.add_fsr, name="add_fsr"),
@@ -70,7 +71,7 @@ urlpatterns = [
     path("edit_test_eq/<int:te_id>", constructors.edit_test_eq, name="edit_test_eq"),
     path("test_equipment", views.test_equipment, name="test_equipment"),
     #link to view for type creation form
-    path("create_type_view", views.create_type_view, name="create_type_view"),
+    path("create_type_view/<str:job_id>", views.create_type_view, name="create_type_view"),
     #type constructor path
     path("create_type", constructors.create_type, name="create_type"),
     path("edit_type/<int:type_id>", constructors.edit_type, name="edit_type"),
@@ -81,7 +82,7 @@ urlpatterns = [
     path("create_manufacturer", constructors.create_manufacturer, name="create_manufacturer"),
 
     #link to view for model creation form
-    path("create_model_view", views.create_model_view, name="create_model_view"),
+    path("create_model_view/<str:job_id>", views.create_model_view, name="create_model_view"),
     #model constructor path
     path("create_model", constructors.create_model, name="create_model"),
     path("create_request", constructors.create_request, name="create_request"),

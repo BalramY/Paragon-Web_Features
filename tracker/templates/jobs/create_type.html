@@ -90,6 +90,7 @@ Create Type
   
   <form id="type_form" class="col s12" action="{% url 'create_type' %}" method="post" enctype="multipart/form-data" >
     {% csrf_token %}
+    <input type="text" name="job_id" value="{{job_id}}" style="visibility: hidden;">
     <div class="row">
       <div class="col s12 m12 l6" style="margin-top: 50px;">
         <label class="phone-font-xs" for="type_name">Type Name (Must be Unique)</label>
