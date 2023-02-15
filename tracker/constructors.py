@@ -797,6 +797,8 @@ def edit_job(request, job_id):
             job.is_harness=request.POST['is_harness'] == 'True'
         if "is_grounding_cluster" in request.POST:
             job.is_grounding_cluster=request.POST['is_grounding_cluster'] == 'True'
+        if "is_grounding_cluster_" in request.POST:
+            job.is_grounding_cluster=request.POST['is_grounding_cluster_'] == 'True'
         if "is_6ft_work" in request.POST:
             job.is_6ft_work=request.POST['is_6ft_work'] == 'True'
         if "is_switching_required" in request.POST:

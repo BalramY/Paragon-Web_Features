@@ -256,6 +256,9 @@ caption{
 .form-switch input:checked + i::before { transform: translate3d(18px, 2px, 0) scale3d(0, 0, 0); }
 .form-switch input:checked + i::after { transform: translate3d(22px, 2px, 0); }
 
+.hidden{
+  display: none;
+}
 </style>
 <div class="container" id="job_preloader">
   <div class="progress" style="padding-top: 20px;">
@@ -335,41 +338,41 @@ caption{
     <table class="highlight col s12 m12 l8" style="margin-top: 13px;">
       <tr>
         <td class="phone-font-med" style="width: 184px; font-weight: 500;">Job Name</td>
-        <td>
-          <div class="col s12">{{job.job_name}}</div><a href="#" class="col s1" id="text_edit_jobname" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped"  data-position="right" data-tooltip="edit">edit</i></a>
+        <td ondblclick="doubleClick('text_input_jobname')">
+          <div class="col s12" id="text_input_jobname_">{{job.job_name}}</div><a href="#" class="col s1" id="text_edit_jobname" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped"  data-position="right" data-tooltip="edit">edit</i></a>
           <input
                   id="text_input_jobname"
-                  class="phone-font-sml editable-field"
+                  class="phone-font-sml editable-field hidden"
                   name="text_input_jobname"
                   type="text"
                   form="job_edit"
                   autocomplete="off"
                   placeholder="Update Job Name"
                   value="{{ job.job_name }}"
-                  hidden
+                  
           >
         </td>
       </tr>
       <tr>
         <td class="phone-font-med" style="width: 184px; font-weight: 500;">Customer</td>
-        <td>
-          <div class="col s12 ">{{job.customer_name}}</div><a href="#" class="col s1" id="text_edit_customer" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped"  data-position="right" data-tooltip="edit">edit</i></a>
-          <input class="editable-field"
+        <td ondblclick="doubleClick('customer_name')">
+          <div class="col s12 " id="customer_name_">{{job.customer_name}}</div><a href="#" class="col s1" id="text_edit_customer" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped"  data-position="right" data-tooltip="edit">edit</i></a>
+          <input class="editable-field hidden"
                  id="customer_name"
                  name="customer_name"
                  type="text" form="job_edit"
                  autocomplete="off"
                  placeholder="Update Customer Name"
                  value="{{ job.customer_name }}"
-                 hidden
+                 
           >
         </td>
       </tr>
       <tr>
         <td class="phone-font-med" style="width: 184px; font-weight: 500;">Job Site</td>
-        <td>
-          <div class="col s12">{{job.job_site}}</div>
-          <input class="editable-field"
+        <td ondblclick="doubleClick('text_input_jobsite')">
+          <div class="col s12" id="text_input_jobsite_">{{job.job_site}}</div>
+          <input class="editable-field hidden"
                  id="text_input_jobsite"
                  name="text_input_jobsite"
                  type="text"
@@ -377,13 +380,19 @@ caption{
                  autocomplete="off"
                  placeholder="Update Job Site"
                  value="{{ job.job_site }}"
-                 hidden
           >
         </td>
       </tr>
       <tr>
         <td class="phone-font-med" style="font-weight: 500;">Work Date(s)</td>
-        <td>
+        <td class="phone-font-med">
+          <span style="font-weight: 500;" ondblclick="doubleClick('start_date')">Start Date: </span> <span id="start_date_">{{ job.start_date }}</span>
+          <input class="hidden" style="width: 49%" class="editable-field" form="job_edit" type="date" id="start_date" name="start_date" {% if job.start_date %} value="{{ job.start_date_formatted }}"{% endif %}>
+          <br>
+          <span style=" font-weight: 500;"  ondblclick="doubleClick('end_date')">End Date: </span> <span id="end_date_">{{ job.end_date }}</span>
+          <input class="hidden" style="width: 49%" class="editable-field" form="job_edit" type="date" id="end_date" name="end_date" {% if job.end_date %} value="{{ job.end_date_formatted }}"{% endif %}>
+        </td>
+        <!-- <td>
             <div class="col s12">{{job.start_date}} - {{job.end_date}}</div>
             
             <label hidden class="editable-field" for="start_date">Start Date</label>
@@ -391,21 +400,21 @@ caption{
             <label hidden class="editable-field" for="end_date">End Date</label>
             <input style="width: 49%" hidden class="editable-field" form="job_edit" type="date" id="end_date" name="end_date" {% if job.end_date %} value="{{ job.end_date_formatted }}"{% endif %}>
 
-        </td> 
+        </td>  -->
       </tr>
 
       <tr>
         <td class="phone-font-med" style="font-weight: 500;">Work Schedule</td>
-        <td>
-          <div class="col s12">{{job.work_schedule}}</div> 
+        <td ondblclick="doubleClick('work_schedule_i')">
+          <div class="col s12" id="work_schedule_i_">{{job.work_schedule}}</div> 
           <textarea
-                  class="materialize-textarea editable-field job_edit"
+                  class="materialize-textarea editable-field job_edit hidden"
                   id="work_schedule_i"
                   name="work_schedule_i"
                   form="job_edit"
                   autocomplete="off"
                   placeholder="Enter Work Schedule"
-                  hidden
+                  
           >{{ job.work_schedule }}</textarea>
 
       </tr>
@@ -458,7 +467,7 @@ caption{
 
       <tr>
         <td class="phone-font-med" style="font-weight: 500;">Project Manager</td>
-        <td> <div class="col s12">
+        <td ondblclick="doubleClick('text_input_projectmanager')"> <div class="col s12" id="text_input_projectmanager_">
           {% if job.project_manager %}
           {{ job.project_manager }}
           {% else %}
@@ -466,14 +475,14 @@ caption{
           {% endif %}</div>
           <a href="#" id="text_edit_projectmanager" class="col s1" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
           <input
-                  class="editable-field"
+                  class="editable-field hidden"
                   id="text_input_projectmanager"
                   name="text_input_projectmanager"
                   type="text" form="job_edit"
                   autocomplete="off"
                   placeholder="Enter Project Manager Name"
                   value="{{ job.project_manager }}"
-                  hidden
+                  
                   onchange="$('#project_manager').val($(this).val())"
           >
         </td>
@@ -927,8 +936,8 @@ caption{
             >
               <td class="phone-font-med" style="font-weight: 500;">Specialty Test Sets</td>
               <td class="phone-font-med" ondblclick="doubleClick('edit_special_te')">
-                <div class="col s12">{{job.specialty_test_equipment}}</div><a class="col s1" href="#" id="text_edit_special_te" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <textarea id="edit_special_te" name="edit_special_te" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.specialty_test_equipment}}</textarea>
+                <div class="col s12" id="edit_special_te_">{{job.specialty_test_equipment}}</div><a class="col s1" href="#" id="text_edit_special_te" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
+                <textarea id="edit_special_te" name="edit_special_te" class="materialize-textarea editable-field job_edit hidden" form="job_edit">{{job.specialty_test_equipment}}</textarea>
               </td>
             </tr>
             <tr>
@@ -952,9 +961,9 @@ caption{
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Generators</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.generators}}</div><a class="col s1" href="#" id="text_edit_generators" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <textarea id="generators" name="generators" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.generators}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('generators')">
+                <div class="col s12" id="generators_">{{job.generators}}</div><a class="col s1" href="#" id="text_edit_generators" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
+                <textarea id="generators" name="generators" class="materialize-textarea editable-field job_edit hidden" form="job_edit">{{job.generators}}</textarea>
               </td>
             </tr>
             <tr
@@ -963,19 +972,18 @@ caption{
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Fuels</td>
-              <td class="phone-font-med">
-                  <div class="col s12">{{ job.fuels }}</div>
-                  <div class="job_edit editable-field" hidden>
-                      Gasoline: <input form="job_edit" type="number" id="gasoline" name="gasoline" value="{{ job.gasoline }}" style="width: 75px" /> gallon/s
-                      <br>
-                      Diesel: <input form="job_edit" type="number" id="diesel" name="diesel" value="{{ job.diesel }}" style="width: 75px"  />  gallon/s
-                  </div>
-              </td>
+                  <td class="phone-font-med">
+                    <span style="font-weight: 500;" ondblclick="doubleClick('gasoline')">Gasoline: </span> <span id="gasoline_">{{ job.gasoline }}</span>
+                    <input class="hidden" form="job_edit" type="number" id="gasoline" name="gasoline" value="{{ job.gasoline }}" style="width: 75px" /> gallon/s
+                  
+                    <span style="margin-left: 20px; font-weight: 500;"  ondblclick="doubleClick('diesel')">Diesel: </span> <span id="diesel_">{{ job.diesel }}</span>
+                    <input class="hidden" form="job_edit" type="number" id="diesel" name="diesel" value="{{ job.diesel }}" style="width: 75px"  />  gallon/s
+                  </td>
             </tr>
             <tr>
               <td class="phone-font-med" style="font-weight: 500;">Extension Cords</td>
-              <td class="phone-font-med"><div class="col s12">{{job.extension_cords}}</div><a class="col s1" href="#" id="text_edit_extension_cords" onclick="return false;"></a>
-                <textarea id="extension_cords" name="extension_cords" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.extension_cords}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('extension_cords')"><div class="col s12" id="extension_cords_">{{job.extension_cords}}</div><a class="col s1" href="#" id="text_edit_extension_cords" onclick="return false;"></a>
+                <textarea id="extension_cords" name="extension_cords" class="materialize-textarea editable-field job_edit hidden" form="job_edit">{{job.extension_cords}}</textarea>
                 </td>
               </td>
             </tr>
@@ -985,10 +993,10 @@ caption{
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Ladders</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.ladders}}</div>
-                <textarea id="edit_ladders" name="edit_ladders" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.ladders}}</textarea>
-                </td>
+              <td class="phone-font-med" ondblclick="doubleClick('edit_ladders')">
+                <div class="col s12" id="edit_ladders_">{{job.ladders}}</div>
+                <textarea id="edit_ladders" name="edit_ladders" class="materialize-textarea editable-field job_edit hidden" form="job_edit" >{{job.ladders}}</textarea>
+              </td>
             </tr>
             <tr
                 {% if not job.tables and not job.chairs %}
@@ -997,12 +1005,19 @@ caption{
             >
               <td class="phone-font-med" style="font-weight: 500;">Tables and Chairs</td>
               <td class="phone-font-med">
+                <span style="font-weight: 500;" ondblclick="doubleClick('tables')">Tables: </span> <span id="tables_">{{ job.tables }}</span>
+                <input class="hidden"  form="job_edit" type="number" id="tables" name="tables" value="{{ job.tables }}" style="width: 75px" /> tables
+              
+                <span style="margin-left: 20px; font-weight: 500;"  ondblclick="doubleClick('chairs')">Chairs: </span> <span id="chairs_">{{ job.chairs }}</span>
+                <input class="hidden" form="job_edit" type="number" id="chairs" name="chairs" value="{{ job.chairs }}" style="width: 75px"  />  chairs
+              </td>
+              <!-- <td class="phone-font-med">
                   <div class="col s12">{{job.tables}} Tables and {{job.chairs}} Chairs</div>
                   <div class="job_edit editable-field" hidden>
                       <input form="job_edit" type="number" id="tables" name="tables" value="{{ job.tables }}" style="width: 75px" /> Tables and
                       <input form="job_edit" type="number" id="chairs" name="chairs" value="{{ job.chairs }}" style="width: 75px"  />  Chairs
                   </div>
-              </td>
+              </td> -->
             </tr>
             <tr
             {% if not job.is_grounding_cluster %}
@@ -1013,7 +1028,7 @@ caption{
               <td class="phone-font-med">
                 <div class="col s12">
                   <div class="job_edit editable-field" >
-                    <div  id="is_grounding_cluster_" class="job_edit">
+                    <div class="job_edit">
                         <label class="form-switch">
                           <input type="checkbox" name="is_grounding_cluster" 
                           id="is_grounding_cluster"  onclick="toggleSwitch('is_grounding_cluster')" 
@@ -1043,9 +1058,9 @@ caption{
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Harness & Lanyards</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.harness_lanyard}}</div>
-                <textarea id="harness_lanyard1" name="harness_lanyard1" class="materialize-textarea editable-field job_edit" onfocusout="$('#harness_lanyard').val($(this).val())" form="job_edit" hidden>{{job.harness_lanyard|default_if_none:''}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('harness_lanyard1')">
+                <div class="col s12" id="harness_lanyard1_">{{job.harness_lanyard}}</div>
+                <textarea id="harness_lanyard1" name="harness_lanyard1" class="materialize-textarea editable-field job_edit hidden" onfocusout="$('#harness_lanyard').val($(this).val())" form="job_edit" >{{job.harness_lanyard|default_if_none:''}}</textarea>
               </td>
             </tr>
             <tr
@@ -1054,9 +1069,9 @@ caption{
                 {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Torque Wrenches</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.torque_wrenches}}</div><a class="col s1" href="#" id="text_edit_torque_wrenches" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <textarea id="torque_wrenches" name="torque_wrenches" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.torque_wrenches}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('torque_wrenches')">
+                <div class="col s12" id="torque_wrenches_">{{job.torque_wrenches}}</div><a class="col s1" href="#" id="text_edit_torque_wrenches" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
+                <textarea id="torque_wrenches" name="torque_wrenches" class="materialize-textarea editable-field job_edit hidden" form="job_edit" >{{job.torque_wrenches}}</textarea>
               </td>
             </tr>
             <tr
@@ -1065,9 +1080,9 @@ caption{
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Man Lifts</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.lifts}}</div><a class="col s1" href="#" id="text_edit_lifts" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <textarea id="lifts" name="lifts" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.lifts}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('lifts')">
+                <div class="col s12" id="lifts_">{{job.lifts}}</div><a class="col s1" href="#" id="text_edit_lifts" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
+                <textarea id="lifts" name="lifts" class="materialize-textarea editable-field job_edit hidden" form="job_edit" >{{job.lifts}}</textarea>
               </td>
             </tr>
             <tr
@@ -1128,9 +1143,9 @@ caption{
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Additional Tools</td>
-              <td class="phone-font-med">
-                <div class="col s12">{{job.additional_tools}}</div><a class="col s1" href="#" id="text_edit_additional_tools" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
-                <textarea id="additional_tools" name="additional_tools" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.additional_tools}}</textarea>
+              <td class="phone-font-med" ondblclick="doubleClick('additional_tools')">
+                <div class="col s12" id="additional_tools_">{{job.additional_tools}}</div><a class="col s1" href="#" id="text_edit_additional_tools" onclick="return false;" ><i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">edit</i></a>
+                <textarea id="additional_tools" name="additional_tools" class="materialize-textarea editable-field job_edit hidden" form="job_edit" >{{job.additional_tools}}</textarea>
               </td>
             </tr>
             <tr
@@ -1139,15 +1154,15 @@ caption{
 			    {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Material</td>
-              <td class="phone-font-med">
-                <div class="col s12" style="white-space: pre-wrap;">{% if job.material %}{{job.material}}{% else %}No material is required for this job.{% endif %}
+              <td class="phone-font-med" ondblclick="doubleClick('material')">
+                <div class="col s12" style="white-space: pre-wrap;" id="material_">{% if job.material %}{{job.material}}{% else %}No material is required for this job.{% endif %}
                 </div>
                   <a class="col s1" href="#" id="text_edit_additional_tools" onclick="return false;" >
                       <i class="tiny job_edit_link material-icons tooltipped" data-position="right" data-tooltip="edit">
                           edit
                       </i>
                   </a>
-                <textarea id="material" name="material" class="materialize-textarea editable-field job_edit" form="job_edit" hidden>{{job.material}}</textarea>
+                <textarea id="material" name="material" class="materialize-textarea editable-field job_edit hidden" form="job_edit" >{{job.material}}</textarea>
               </td>
             </tr>
             <tr>
@@ -1228,11 +1243,11 @@ caption{
             {% endif %}
             >
               <td class="phone-font-med" style="font-weight: 500;">Other PPE Requirements</td>
-              <td class="phone-font-med">
-                <div class="col s12">
-                  <span>{{ job.other_ppe_requirements }}</span><br>
-                  <div class="editable-field" hidden>
-                    <input type="text"
+              <td class="phone-font-med" ondblclick="doubleClick('other_ppe_requirements1')">
+                <div class="col s12" >
+                  <span id="other_ppe_requirements1_">{{ job.other_ppe_requirements }}</span><br>
+                  <div class="editable-field" >
+                    <input type="text" class="hidden"
                           name="other_ppe_requirements1"
                           id="other_ppe_requirements1"
                           form="job_edit"
@@ -1246,8 +1261,8 @@ caption{
             </tr>
             <tr>
               <td class="phone-font-med" style="font-weight: 500;">Weather Considerations</td>
-              <td class="phone-font-med">
-                  <div class="col s12">
+              <td class="phone-font-med" ondblclick="doubleClick('weather_considerations')">
+                  <div class="col s12" id="weather_considerations_">
                     {% if job.weather_considerations %}
                     {{ job.weather_considerations }}
                     {% else %}
@@ -1257,8 +1272,8 @@ caption{
                   <textarea
                           id="weather_considerations"
                           name="weather_considerations"
-                          class="materialize-textarea editable-field job_edit"
-                          form="job_edit" hidden
+                          class="materialize-textarea editable-field job_edit hidden"
+                          form="job_edit" 
                   >{{job.weather_considerations}}</textarea>
               </td>
             </tr>
@@ -1415,7 +1430,7 @@ caption{
 
           <td class="phone-font-med">
               <div class="col s12">
-                {% if job.is_startup %}
+                <!-- {% if job.is_startup %}
                 This job includes startup testing for new equipment installation.<br>
                 {% endif %}
                 {% if job.is_preventative_maintenance %}
@@ -1432,8 +1447,8 @@ caption{
                 {% endif %}
                 {% if job.is_neta_testing %}
                 Some or all of equipment shall be tested at NETA testing standards.<br>
-                {% endif %}
-                <div class="editable-field" hidden>
+                {% endif %} -->
+                <div class="editable-field">
                     <p>
                         <input type="hidden"
                                name="is_startup"
@@ -1449,6 +1464,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                value="True"
+                               id="is_startup"
+                               onclick="toggleSwitch('is_startup')"
                         />
                         <span>This job includes startup testing for new equipment installation.</span>
                       </label>
@@ -1470,6 +1487,8 @@ caption{
                                     value="True"
                                 {% endif %}
                                 value="True"
+                                id="is_preventative_maintenance"
+                                onclick="toggleSwitch('is_preventative_maintenance')"
                         />
                         <span>This job includes preventative maintenance on existing equipment.</span>
                       </label>
@@ -1490,6 +1509,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_troubleshooting"
+                                onclick="toggleSwitch('is_troubleshooting')"
                         />
                         <span>This job includes troubleshooting.</span>
                       </label>
@@ -1510,6 +1531,8 @@ caption{
                                     checked="checked"
                                {% endif %}
                                value="True"
+                               id="is_warranty"
+                               onclick="toggleSwitch('is_warranty')" 
                         />
                         <span>This job is a warranty.</span>
                       </label>
@@ -1530,6 +1553,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_standard_testing"
+                                onclick="toggleSwitch('is_standard_testing')"
 
                         />
                         <span>The testing of equipment shall be up to standard testing standards.</span>
@@ -1551,6 +1576,8 @@ caption{
                                     checked="checked"
                                {% endif %}
                                value="True"
+                               id="is_neta_testing"
+                               onclick="toggleSwitch('is_neta_testing')"
                         />
                         <span>The testing of equipment shall be up to NETA testing standards.</span>
                       </label>
@@ -1560,7 +1587,7 @@ caption{
         </tr>
         <tr>
           <td class="phone-font-med" style="font-weight: 500;">Job Scope Summary</td>
-          <td class="phone-font-med"><div class="col s12">
+          <td class="phone-font-med" ondblclick="doubleClick('job_scope_details')"><div class="col s12" id="job_scope_details_">
             {% if job.job_scope_details %}
             {{ job.job_scope_details }}
             {% else %}
@@ -1568,9 +1595,9 @@ caption{
             {% endif %}</div>
             <textarea id="job_scope_details"
                       name="job_scope_details"
-                      class="materialize-textarea editable-field job_edit"
+                      class="materialize-textarea editable-field job_edit hidden"
                       form="job_edit"
-                      hidden>{{job.job_scope_details}}</textarea>
+                      >{{job.job_scope_details}}</textarea>
             
           </td>
 
@@ -1680,7 +1707,7 @@ caption{
           <td class="phone-font-med" style="font-weight: 500;">General PPE </td>
           <td class="phone-font-med">
               <div class="col s12" style="text-transform: capitalize;">
-
+                {% comment %}
                   {#                  Always Visible                   #}
                   <span
                     {% if not job.is_hardhat %}
@@ -1743,8 +1770,8 @@ caption{
                   {% if job.is_h2s_monitor %}
                   <span>H2S monitor</span><br>
                   {% endif %}
-
-                  <div class="editable-field" hidden>
+                {% endcomment %}
+                  <div class="editable-field">
                     <p>
                         <input type="hidden"
                                name="is_hardhat"
@@ -1760,6 +1787,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_hardhat"
+                                onclick="toggleSwitch('is_hardhat')"
                         />
                         <span>Hardhat</span>
                       </label>
@@ -1780,6 +1809,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_safety_glasses"
+                                onclick="toggleSwitch('is_safety_glasses')"
                         />
                         <span>Safety Glasses</span>
                       </label>
@@ -1800,6 +1831,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_safety_shoes"
+                                onclick="toggleSwitch('is_safety_shoes')"
                         />
                         <span>Safety Shoes</span>
                       </label>
@@ -1820,6 +1853,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_safety_vest"
+                                onclick="toggleSwitch('is_safety_vest')"
                         />
                         <span>Hi-visibility Vest</span>
                       </label>
@@ -1841,6 +1876,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_safety_gloves"
+                                onclick="toggleSwitch('is_safety_gloves')"
                         />
                         <span>Safety Gloves</span>
                       </label>
@@ -1861,6 +1898,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_fr_clothes"
+                                onclick="toggleSwitch('is_fr_clothes')"
                         />
                         <span>Standard Flame Retardant Clothes</span>
                       </label>
@@ -1881,6 +1920,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_8cal_protection"
+                                onclick="toggleSwitch('is_8cal_protection')"
                         />
                         <span>10 Cal Protection Gear</span>
                       </label>
@@ -1901,6 +1942,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_40cal_protection"
+                                onclick="toggleSwitch('is_40cal_protection')"
                         />
                         <span>40 Cal Protection Gear</span>
                       </label>
@@ -1921,6 +1964,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_harness"
+                                onclick="toggleSwitch('is_harness')"
                         />
                         <span>Harness & Lanyard</span>
                       </label>
@@ -1941,6 +1986,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_mv_voltage_detector"
+                                onclick="toggleSwitch('is_mv_voltage_detector')"
                         />
                         <span>Medium Voltage Proximity Detector</span>
                       </label>
@@ -1961,6 +2008,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_insulated_gloves"
+                                onclick="toggleSwitch('is_insulated_gloves')"
                         />
                         <span>Insulated Gloves</span>
                       </label>
@@ -1981,6 +2030,8 @@ caption{
                                     checked="checked"
                                 {% endif %}
                                 value="True"
+                                id="is_h2s_monitor"
+                                onclick="toggleSwitch('is_h2s_monitor')"
                         />
                         <span>H2S Monitor</span>
                       </label>
@@ -1996,11 +2047,11 @@ caption{
         {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Other PPE Requirements</td>
-          <td class="phone-font-med">
-            <div class="col s12">
-              <span>{{ job.other_ppe_requirements }}</span><br>
-              <div class="editable-field" hidden>
-                <input type="text"
+          <td class="phone-font-med" ondblclick="doubleClick('other_ppe_requirements')">
+            <div class="col s12" >
+              <span id="other_ppe_requirements_">{{ job.other_ppe_requirements }}</span><br>
+              <div class="editable-field">
+                <input type="text" class="hidden"
                       name="other_ppe_requirements"
                       id="other_ppe_requirements"
                       form="job_edit"
@@ -2125,13 +2176,13 @@ caption{
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Chemicals</td>
-          <td class="phone-font-med">
+          <td class="phone-font-med" ondblclick="doubleClick('chemical_hazards')">
               <div class="col s12">
-                  {{job.chemical_hazards}}
+                <span id="chemical_hazards_">{{job.chemical_hazards}}</span> 
                   <textarea id="chemical_hazards"
                             name="chemical_hazards"
-                            class="materialize-textarea editable-field job_edit"
-                            form="job_edit" hidden
+                            class="materialize-textarea editable-field job_edit hidden"
+                            form="job_edit" 
                   >{{job.chemical_hazards}}</textarea>
               </div>
           </td>
@@ -2142,14 +2193,14 @@ caption{
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Harness & Lanyard Details</td>
-          <td class="phone-font-med">
-              <div class="col s12">
-                  {{job.harness_lanyard}}
+          <td class="phone-font-med" ondblclick="doubleClick('harness_lanyard')">
+              <div class="col s12" >
+                <span id="harness_lanyard_"> {{job.harness_lanyard}}</span>
                   <textarea id="harness_lanyard"
                             name="harness_lanyard"
                             onfocusout="$('#harness_lanyard1').val($(this).val())"
-                            class="materialize-textarea editable-field job_edit"
-                            form="job_edit" hidden
+                            class="materialize-textarea editable-field job_edit hidden"
+                            form="job_edit" 
                   >{{job.harness_lanyard}}</textarea>
               </div>
           </td>
@@ -2160,13 +2211,13 @@ caption{
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Permits</td>
-          <td class="phone-font-med">
-            <div class="col s12">
-              {{job.permit_requirements|default_if_none:'None'}}
+          <td class="phone-font-med" ondblclick="doubleClick('permit_requirements')">
+            <div class="col s12" >
+              <span id="permit_requirements_"> {{job.permit_requirements|default_if_none:'None'}}</span>
               <textarea id="permit_requirements"
                         name="permit_requirements"
-                        class="materialize-textarea editable-field job_edit"
-                        form="job_edit" hidden
+                        class="materialize-textarea editable-field job_edit hidden"
+                        form="job_edit" 
               >{{job.permit_requirements}}</textarea>
             </div>
           </td>
@@ -2186,8 +2237,8 @@ caption{
 
                     <div  class="job_edit">
                         <label class="form-switch">
-                        <input type="checkbox" name="is_grounding_cluster" 
-                        id="is_grounding_cluster"  onclick="toggleSwitch('is_grounding_cluster')" 
+                        <input type="checkbox" name="is_grounding_cluster_" 
+                        id="is_grounding_cluster_"  onclick="toggleSwitch('is_grounding_cluster_')" 
                         {%if job.is_grounding_cluster%} checked {%endif%}>
                         <i></i>
                         </label>
@@ -2219,21 +2270,21 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
         
         <tr>
           <td class="phone-font-med" style="font-weight: 500;">Job Number</td>
-          <td class="phone-font-med">
-            <div class="col s12">
+          <td class="phone-font-med"  ondblclick="doubleClick('job_number')">
+            <div class="col s12" id="job_number_">
                 {{ job.job_number }}
             </div>
             <textarea id="job_number"
                       name="job_number"
-                      class="materialize-textarea editable-field job_edit"
-                      form="job_edit" hidden
+                      class="materialize-textarea editable-field job_edit hidden"
+                      form="job_edit" 
             >{{job.job_number}}</textarea>
           </td>
         </tr>
         <tr>
           <td class="phone-font-med" style="font-weight: 500;">Project Manager</td>
-          <td class="phone-font-med">
-              <div class="col s12">
+          <td class="phone-font-med" ondblclick="doubleClick('project_manager')">
+              <div class="col s12" id="project_manager_">
                 {% if job.project_manager %}
                 {{ job.project_manager }}
                 {% else %}
@@ -2244,16 +2295,16 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
                       id="project_manager"
                       name="project_manager"
                       type="text"
-                      class="editable-field job_edit"
+                      class="editable-field job_edit hidden"
                       onchange="$('#text_input_projectmanager').val($(this).val())"
-                      form="job_edit" placeholder="Enter Project Manager Name" value="{{ job.project_manager }}" hidden
+                      form="job_edit" placeholder="Enter Project Manager Name" value="{{ job.project_manager }}" 
               >
           </td>
         </tr>
         <tr class="">
           <td class="phone-font-med" style="font-weight: 500;">Food Accomodations</td>
-          <td class="phone-font-med">
-              <div class="col s12">
+          <td class="phone-font-med" ondblclick="doubleClick('food_accomodations')">
+              <div class="col s12" id="food_accomodations_">
                 {% if job.food_accomodations %}
                 {{ job.food_accomodations }}
                 {% else %}
@@ -2263,15 +2314,15 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
               <textarea
                       id="food_accomodations"
                       name="food_accomodations"
-                      class="materialize-textarea editable-field job_edit"
-                      form="job_edit" hidden
+                      class="materialize-textarea editable-field job_edit hidden"
+                      form="job_edit" 
               >{{job.food_accomodations}}</textarea>
           </td>
         </tr>
         <tr class="">
           <td class="phone-font-med" style="font-weight: 500;">Lodging Recommendations</td>
-          <td class="phone-font-med">
-              <div class="col s12">
+          <td class="phone-font-med" ondblclick="doubleClick('lodging_recommendations')">
+              <div class="col s12" id="lodging_recommendations_">
                 {% if job.lodging_recommendations %}
                 {{ job.lodging_recommendations }}
                 {% else %}
@@ -2281,8 +2332,8 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
               <textarea
                       id="lodging_recommendations"
                       name="lodging_recommendations"
-                      class="materialize-textarea editable-field job_edit"
-                      form="job_edit" hidden
+                      class="materialize-textarea editable-field job_edit hidden"
+                      form="job_edit" 
               >{{job.lodging_recommendations}}</textarea>
           </td>
         </tr>
@@ -2314,11 +2365,11 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
             {% endif %}
         >
           <td class="phone-font-med" style="font-weight: 500;">Quoted Amount</td>
-          <td class="phone-font-med">
-            <div class="col s12">
+          <td class="phone-font-med" ondblclick="doubleClick('quoted_price')">
+            <div class="col s12" id="quoted_price_">
                 ${{ job.quoted_price }}
             </div>
-            <input class="editable-field job_edit" form="job_edit" type="number" id="quoted_price" name="quoted_price" value="{{ job.quoted_price }}" hidden />
+            <input class="editable-field job_edit hidden" form="job_edit" type="number" id="quoted_price" name="quoted_price" value="{{ job.quoted_price }}"  />
   
           </td>
         </tr>
@@ -2597,32 +2648,38 @@ have a custom Job Safety Analysis, we can add that file here so your field peopl
         });
     }
 
-    function doubleClick(item) {
-      $('#'+item).toggle()
+    var name = '';
+    function doubleClick(item1) {
+        $('#'+item1).removeClass("hidden")
+        name = item1
     }
 
-    $(function () {
-      $('#edit_special_te').blur(function (e) {
-        e.preventDefault();
-        var x = document.getElementById("edit_special_te").value;
-        console.log("#######", x)
-        $.ajax({
-          type: 'POST',
-          url: "{% url 'edit_job' job.id %}",
-          data: {"edit_special_te": x,
-          'csrfmiddlewaretoken': '{{ csrf_token }}'},
-          dataType: "json",
-          success: function(resultData) {
-            document.getElementById("edit_special_te").previousElementSibling.previousElementSibling.innerText = x;
-            $('#'+"edit_special_te").toggle()
-          },
-          error: function(data){
-               alert(data.responseJSON.error);
-               }
-        });
-      });
+    $(document).on('click', function(e) {
+        if (e.target.id != name && name != ''){
+            $('#'+name).addClass("hidden");
+            var xx = document.getElementById(name).value;
+            let data = {}
+            data[name] = xx,
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}'
+            console.log("data", data)
+            let divId = name+'_'
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'edit_job' job.id %}",
+                data: data,
+                dataType: "json",
+                success: function(resultData) {
+                  console.log("###", divId)
+                    document.getElementById(divId).textContent = xx;
+                    console.log("success", name)
+                },
+                error: function(resultData){
+                    alert(data.responseJSON.error);
+                }
+            });
+            name = ''
+        }
     });
-
 
   function addNoteModal(pk, name){
     $('#eq_name_add_note').html(name)
