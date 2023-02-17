@@ -309,67 +309,14 @@ def job(request, job_id, new_obj=None, obj_type=None):
         trashed_site_eq = Equipment.objects.filter(job_site=job.job_site, trashed=True).values_list('site_id', flat=True)
         stripped_trashed_site_ids=[sub[ : -31] for sub in trashed_site_eq]
 
-    # equipment_id=None
-    # job_site_id=None
-    # job = job_id and Job.objects.filter(pk=job_id).first()
-    
-    # job_site = job_site_id and JobSite.objects.filter(pk=job_site_id).first()
     existing_equipment = job and job.equipment.filter(trashed=False)#creates variable with existing untrashed equipment
     parent_equipment = None
-    # if equipment_id:
-    #     parent_equipment = Equipment.objects.get(pk=equipment_id)
-    #     if not parent_equipment:
-    #         return render(
-    #             request,
-    #             "jobs/error.html", {
-    #                 "message": "Error attaching equipment. Please contact Admin"
-    #             }
-    #         )
-    # equipment_ids = []
-    # if job:
-    #     for eq in job.equipment.all():
-    #         equipment_ids.append(eq.site_id)
-    # json_equipment_ids = json.dumps(equipment_ids)
-    # types = Type.objects.all()
-    # manufacturers = Manufacturer.objects.all()
     test_equipment_objs = TestEquipment.objects.all()
-    # test_equipment_list = json.dumps(list(TestEquipment.objects.values_list('name', flat=True)))
-    # models = Model.objects.all()
-    #get list of all site_ids on the site
-    # stripped_trashed_site_ids = []
-    # stripped_trashed_ids = []
-    # if job_site_id:
-    #     site_ids = json.dumps(list(Equipment.objects.filter(job_site=job_site, trashed=False).values_list('site_id', flat=True)))
-    #     trashed_site_eq = Equipment.objects.filter(job_site=job_site, trashed=True).values_list('site_id', flat=True)
-    #     stripped_trashed_site_ids=[sub[ : -31] for sub in trashed_site_eq]
-    #     trashed_site_ids = json.dumps(list(stripped_trashed_site_ids))
-    # elif job_id:
-    #     trashed_eq = job.equipment.filter(trashed=True).values_list('site_id', flat=True)
-    #     stripped_trashed_ids=[sub[ : -31] for sub in trashed_eq]
-    #     site_ids = json.dumps(list(Equipment.objects.filter(job_site=job.job_site).values_list('site_id', flat=True)))
-    #     trashed_site_eq = Equipment.objects.filter(job_site=job.job_site, trashed=True).values_list('site_id', flat=True)
-    #     stripped_trashed_site_ids=[sub[ : -31] for sub in trashed_site_eq]
-        
-    # context = {
-    #     # "job": job,
-    #     # "types": types,
-    #     # "manufacturers": manufacturers,
-    #     # "models": models,
-    #     "existing_equipment": existing_equipment,
-    #     "test_equipment_objs": test_equipment_objs,
-    #     # "test_equipment_list": test_equipment_list,
-    #     # "json_equipment_ids": json_equipment_ids,
-    #     "parent_equipment": parent_equipment,
-    #     # "job_site": job_site,
-    #     # "site_ids": site_ids,
-    #     # "stripped_trashed_site_ids":stripped_trashed_site_ids,
-    #     # "stripped_trashed_ids":stripped_trashed_ids
-    # }
-    print("######3", new_obj)
+
     new_model = {}
     if obj_type == "model":
         new_obj = Model.objects.get(id=int(new_obj))
-        print("new model", new_obj, new_obj.model_manufacturer.name)
+        new_model['model_id'] = new_obj.id
         new_model['model_name'] = new_obj.name
         new_model['model_type'] = new_obj.model_type.name
         new_model['model_manufacturer'] = new_obj.model_manufacturer.name
@@ -419,6 +366,7 @@ def job(request, job_id, new_obj=None, obj_type=None):
         
         "new_type" : new_obj if obj_type == "type" and new_job else None,
         "new_model": new_model if obj_type == "model" and new_job else None,
+        "new_manufacturer": new_obj if obj_type == "manufacturer" and new_obj else None
             
     }
     # The below code can be activated to create a copy of a job when that job is viewed. Use only for copying jobs for example jobs
@@ -571,7 +519,7 @@ def create_type_view(request, job_id=''):
         return render(request, "jobs/error.html", {"message": "Your profile must be associated with a company to view this information. Contact us for a company key."})
 
 
-def create_manufacturer_view(request):
+def create_manufacturer_view(request, job_id=''):
 
     if not request.user.is_authenticated:
         return render(request, "jobs/login.html", {"message": None})
@@ -581,6 +529,7 @@ def create_manufacturer_view(request):
     #pass in existing types of equipment
     context= {
         "manufacturers": manufacturers,
+        "job_id": job_id
         }
 
     if request.user.is_authenticated and user_properties.company:

@@ -100,21 +100,23 @@
             Type <a class="phone-font-ml" href="{% url 'create_type_view' job.id %}">Types</a>
           </label>
           <input id="eq_type" name="eq_type" type="text" class=" phone-font-med phone-squash-lrg" onchange=typeChange() autocomplete="off" onClick="this.select()"
-            placeholder="Select Type" required value="{% if new_type %} {{ new_type }} {% endif %}{% if new_model %} {{ new_model.model_type }} {% endif %}">
+            placeholder="Select Type" required value="{% if new_type %}{{ new_type }}{% endif %}{% if new_model %}{{ new_model.model_type }}{% endif %}">
         </div>      
         <div class="input-field col s12 m12 l12 xl4">
-          <label class="active phone-squash" for="manufacturer">Manufacturer</label>
+          <label class="active phone-squash" for="manufacturer">
+            Manufacturer <a class="phone-font-ml" href="{% url 'create_manufacturer_view' job.id %}">Manufacturers</a>
+          </label>
           <input id="manufacturer" name="manufacturer" type="text" onchange="manChange()" class="autocomplete phone-font-med phone-squash-lrg" autocomplete="off"
             onClick="this.select()" placeholder="e.g. ACME Corp" form="add_equipment_form" required
-             value="{% if new_model %}{{new_model.model_manufacturer}} {% endif %}">
+             value="{% if new_model %}{{new_model.model_manufacturer}}{% endif %}{% if new_manufacturer %}{{new_manufacturer}}{% endif %}">
         </div>
         <div class="input-field col s12 m12 l12 xl4">
           <label class="active phone-squash" for="model_name">
             Model <a class="phone-font-ml" href="{% url 'create_model_view' job.id %}">Model</a>
         </label>
           <input id="model_name" name="model_name" type="text" class="autocomplete phone-font-med phone-squash-lrg" autocomplete="off" onClick="this.select()"
-            placeholder="e.g. Trip Pro 30" form="add_equipment_form" required value="{% if new_model %}{{new_model.model_name}} {% endif %}">
-            <input type="hidden" id="model" name="model" form="add_equipment_form" value="">
+            placeholder="e.g. Trip Pro 30" form="add_equipment_form" required value="{% if new_model %}{{new_model.model_name}}{% endif %}">
+            <input type="hidden" id="model" name="model" form="add_equipment_form" value="{% if new_model %}{{new_model.model_id}}{% endif %}">
         </div>
       </div>
       <div class="row">        
@@ -176,7 +178,7 @@
     </div>
     <div class="row">
       <div class="input-field col s12">
-        <button class="btn waves-effect waves-light phone-button" type="submit" onclick="onSubmit();" name="action" id="submit-btn"> Add
+        <button class="btn waves-effect waves-light phone-button" type="button" name="action" id="submit-btn-eq"> Add
           <i class="material-icons right phone-squash-lrg">send</i>
         </button>&nbsp &nbsp &nbsp
         <button class="btn-small waves-effect waves-light phone-button phone-button-sml" type="reset"  name="action" onclick="return confirm_reset();">
@@ -358,7 +360,6 @@ $(document).ready(function(){
     // $('#model_test_sheet_btn').hide();
 
     function updateValuesforSettingType(value) {
-        console.log("callliii")
         var eq_results = jQuery.grep(window.types, function(t, i) {
           return t.name.trim() === value.trim();
         });
@@ -464,13 +465,14 @@ $(document).ready(function(){
   });    
 
   function updateValuesforSettingModel(value) {
+    console.log("value", value)
       var checkone="onmodelresults";
       var model_results = jQuery.grep(window.models, function(t, i) {
 
       let tName = t.name.trim().replace("&amp;", "&");
         return tName === value.trim();
       });
-
+      console.log("model_results", model_results)
       if (model_results.length>0) {
           var mandatory_model = model_results[0].mandatory_model_test_equipment;
           var optional_model = model_results[0].optional_model_test_equipment;
@@ -516,9 +518,10 @@ $(document).ready(function(){
       }
 
       for (var i = 0; i < mandatory_model.length; i++) {
-          instance.addChip({
-              tag: mandatory_model[i],
-              image: '', // optional
+        console.log("mandatory_model",mandatory_model)
+        instance.addChip({
+          tag: mandatory_model[i],
+          image: '', // optional
         });
       };
 
@@ -557,7 +560,16 @@ $(document).ready(function(){
               updateValuesforSettingModel(value);
           }
         });
-    }
+        // $('#model_name').click()
+        // var instance = M.Autocomplete.getInstance($('#model_name'));
+        // console.log("IIII", instance)
+        // instance.selectOption({
+        //   data: {
+        //     '{{new_model.model_name}}': null
+        //   },
+        // });
+        updateValuesforSettingModel('{{new_model.model_name}}');
+      }
   });
     let mandatoryInstance = null;
     let optionalInstance = null;
@@ -622,7 +634,7 @@ $(document).ready(function(){
   }
   function idCheck() {
     siteIdName=$('#site_id').val()
-    console.log(stripped_trashed_site_ids)
+    console.log("idCheck", stripped_trashed_site_ids)
       $('.eq_in_job_already').html('&#x201C;'+siteIdName+'&#x201D;')
     
     equipmentIds={{ json_equipment_ids|safe }}
@@ -649,23 +661,44 @@ $(document).ready(function(){
     }
 
   }
-  function onSubmit() {
-    siteIdName=$('#site_id').val()
-    equipmentIds={{ json_equipment_ids|safe }}
-    if (equipmentIds.includes(siteIdName)){
-      return false;
-    }
-    if (site_ids.includes(siteIdName)){
-      return false;
-    }
-
-    var mandatoryValue = Array.from(mandatoryInstance.chipsData.map(x => x.tag)).join(",");
-    $("#mandatory_test_equipment").val(mandatoryValue);
+  $(document).ready(function(){
+    $('#submit-btn-eq').click(function(){
+        siteIdName=$('#site_id').val()
+        equipmentIds={{ json_equipment_ids|safe }}
+        if (equipmentIds.includes(siteIdName)){
+          return false;
+        }
+        if (site_ids.includes(siteIdName)){
+          return false;
+        }
+        var mandatoryValue = Array.from(mandatoryInstance.chipsData.map(x => x.tag)).join(",");
+        console.log("mandatoryValue",mandatoryValue)
+        $("#mandatory_test_equipment").val(mandatoryValue);
+        
+        var optionalValue = Array.from(optionalInstance.chipsData.map(x => x.tag)).join(",");
+        $("#optional_test_equipment").val(optionalValue);
+        $("#add_equipment_form").submit()
+        });
+  });
+  // function onSubmit() {
+  //   console.log("submitt")
+  //   debugger
+  //   siteIdName=$('#site_id').val()
+  //   equipmentIds={{ json_equipment_ids|safe }}
+  //   if (equipmentIds.includes(siteIdName)){
+  //     return false;
+  //   }
+  //   if (site_ids.includes(siteIdName)){
+  //     return false;
+  //   }
+  //   var mandatoryValue = Array.from(mandatoryInstance.chipsData.map(x => x.tag)).join(",");
+  //   console.log("mandatoryValue",mandatoryValue)
+  //   $("#mandatory_test_equipment").val(mandatoryValue);
     
-    var optionalValue = Array.from(optionalInstance.chipsData.map(x => x.tag)).join(",");
-    $("#optional_test_equipment").val(optionalValue);
+  //   var optionalValue = Array.from(optionalInstance.chipsData.map(x => x.tag)).join(",");
+  //   $("#optional_test_equipment").val(optionalValue);
    
-  }
+  // }
  let allEquipments_list = {{ test_equipment_list|safe}}
   $('#m_test_equipment-chips').chips({
     placeholder: 'Type to Filter',
@@ -680,7 +713,7 @@ $(document).ready(function(){
     minLength: 0,
       },
       onChipAdd: (elem) => {
-
+        if (mandatoryInstance){
         let selectedItems = mandatoryInstance.chipsData;
         let newItemIndex = selectedItems.length - 1
         let newItem = selectedItems[newItemIndex]
@@ -697,7 +730,8 @@ $(document).ready(function(){
             delete existingItems[tag]
             delete optionalItems[tag]
         }
-      },
+      }
+    },
       onChipDelete: (elem, data) => {
         let deletedTestEquipment = data.firstChild.textContent
         let existingItems = mandatoryInstance.options.autocompleteOptions.data
@@ -728,6 +762,7 @@ $(document).ready(function(){
     minLength: 0,
       },
       onChipAdd: (elem) => {
+        if(optionalInstance){
         let selectedItems = optionalInstance.chipsData;
         let newItemIndex = selectedItems.length - 1
         let newItem = selectedItems[newItemIndex]
@@ -744,7 +779,8 @@ $(document).ready(function(){
             delete optionalItems[tag]
             delete existingItems[tag]
         }
-      },
+      }
+    },
       onChipDelete: (elem, data) => {
         let deletedTestEquipment = data.firstChild.textContent
         let existingItems = optionalInstance.options.autocompleteOptions.data

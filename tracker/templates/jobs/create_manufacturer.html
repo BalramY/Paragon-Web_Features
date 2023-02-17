@@ -24,6 +24,7 @@
       <div class="col s12 ">
         <form id="manufacturer_form" class="col s12" action="{% url 'create_manufacturer' %}" method="post">
           {% csrf_token %}
+          <input type="text" name="job_id" value="{{job_id}}" style="visibility: hidden;">
           <div class="row">
             <div class="input-field col s12 ">
               <label class="active " for="manufacturer_name">Manufacturer Name</label>

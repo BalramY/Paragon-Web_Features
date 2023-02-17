@@ -1335,7 +1335,6 @@ def add_equipment(request, job_id=None):
                 parent_equipment = Equipment.objects.get(pk=parent_equipment_id)
             except:
                 return render(request, "jobs/error.html", {"message": "Error Parent equipment not loaded. Contact Admin"})
-
     type_name=request.POST["eq_type"]
     equipment_type = Type.objects.get(name=type_name)
     model=request.POST["model"]
@@ -1469,7 +1468,7 @@ def add_equipment(request, job_id=None):
             for equipment_name in optional_equipment_list:
                 try:
                     equipment=TestEquipment.objects.get(name=equipment_name)
-                    new_equipment.mandatory_test_equipment.add(equipment.pk)
+                    new_equipment.optional_test_equipment.add(equipment.pk)
                     if job_id:
                         job.test_equipment.remove(equipment.pk)
                     
@@ -1479,8 +1478,6 @@ def add_equipment(request, job_id=None):
         new_equipment.save()
         new_equipment.equipment_mold = site_equipment
         new_equipment.save()
-        if request.session.has_key('new_type'):
-            del request.session['new_type'] 
     return HttpResponseRedirect(reverse("job", args=(job_id, ))+"#equipment")
 
 def download_xlsx(request, equipment_id):
@@ -5397,12 +5394,9 @@ def create_type(request):
     new_type.save()
     
     if request.POST['job_id'].strip():
-        job_id = request.POST['job_id'].strip()
-        # request.session['new_type'] = str(new_type.name)        
+        job_id = request.POST['job_id'].strip()     
         return HttpResponseRedirect(reverse("job_w_type", args=(job_id, new_type.name, "type"))+ "#equipment")
     else:
-        # if request.session.has_key('new_type'):
-        #         del request.session['new_type'] 
         return HttpResponseRedirect(reverse("eq_type", args=(new_type.pk, )))
 
 
@@ -5674,6 +5668,9 @@ def create_manufacturer(request):
     new_manufacturer.customer_support = request.POST["customer_support"]
     #save to database
     new_manufacturer.save()
+    if request.POST['job_id'].strip():
+        job_id = request.POST['job_id'].strip()   
+        return HttpResponseRedirect(reverse("job_w_type", args=(job_id, new_manufacturer.name, "manufacturer"))+ "#equipment")
     return HttpResponseRedirect(reverse("eq_manufacturer", args=(new_manufacturer.pk, )))
 
 def create_request(request):
@@ -5839,9 +5836,7 @@ def create_model(request):
 
         new_model.save()
         if request.POST['job_id'].strip():
-            job_id = request.POST['job_id'].strip()
-            # request.session['new_type'] = str(new_type.name)
-            print("model created", new_model)     
+            job_id = request.POST['job_id'].strip()   
             return HttpResponseRedirect(reverse("job_w_type", args=(job_id, new_model.id, "model"))+ "#equipment")
         return HttpResponseRedirect(reverse("eq_model", args=(new_model.pk, )))
     else:

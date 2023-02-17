@@ -77,7 +77,7 @@ urlpatterns = [
     path("edit_type/<int:type_id>", constructors.edit_type, name="edit_type"),
 
     #link to view for manufacturer creation form
-    path("create_manufacturer_view", views.create_manufacturer_view, name="create_manufacturer_view"),
+    path("create_manufacturer_view/<str:job_id>", views.create_manufacturer_view, name="create_manufacturer_view"),
     #manufacturer constructer path
     path("create_manufacturer", constructors.create_manufacturer, name="create_manufacturer"),
 
